@@ -1,0 +1,29 @@
+Publicly visible:
+ cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/ensembl checkout
+
+{|
+|ensembl||Core ensembl API
+|-
+|ensembl-pipeline||Core ensembl analysis pipeline
+|-
+|ensembl-analysis||Modules used by analysis pipeline to do the actual work (blast searches etc...)
+|-
+|ensembl-otter||Our core modules which extend Ensembl and deal with saving gene annotations plus Perl/Tk GUI components
+|-
+|ensembl-ace||Modules for transforming ensembl analysis pipeline data into acedb format
+|}
+
+Only accessible on the Sanger network:
+ cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout
+
+{|
+|PerlModules||Data objects used by the Perl/Tk GUI, plus Sanger specific modules for tasks such as EMBL sequence submissions
+|-
+|submissions||Scripts used by cron jobs to submit sequence data to EMBL
+|-
+|chromoview||Visualisation and assembly of chromosomes from overlapping BACs (TPFs to AGPs)
+|-
+|humscripts||Mostly legacy scripts used in the humpub account
+|-
+|utils||A few useful scripts mostly written by James eg: new_module for creating a new Perl module 
+|}
