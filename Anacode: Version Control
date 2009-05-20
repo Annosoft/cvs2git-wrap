@@ -1,4 +1,5 @@
-Publicly visible:
+== Publicly visible ==
+
  cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/ensembl checkout
 
 ;ensembl: Core ensembl API
@@ -7,7 +8,8 @@ Publicly visible:
 ;ensembl-otter: Our core modules which extend Ensembl and deal with saving gene annotations plus Perl/Tk GUI components
 ;ensembl-ace: Modules for transforming ensembl analysis pipeline data into acedb format
 
-Only accessible on the Sanger network:
+== Only accessible on the Sanger network ==
+
  cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout
 
 ;PerlModules: Data objects used by the Perl/Tk GUI, plus Sanger specific modules for tasks such as EMBL sequence submissions
