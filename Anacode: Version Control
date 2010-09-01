@@ -1,6 +1,7 @@
 [[Category:Anacode]]
 
-== Publicly visible ==
+== CVS modules ==
+=== Publicly visible ===
 
  cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/ensembl checkout
 
@@ -10,7 +11,7 @@
 ;ensembl-otter: Our core modules which extend Ensembl and deal with saving gene annotations plus Perl/Tk GUI components
 ;ensembl-ace: Modules for transforming ensembl analysis pipeline data into acedb format
 
-== Only accessible on the Sanger network ==
+=== Only accessible on the Sanger network ===
 
  cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout
 
@@ -19,3 +20,12 @@
 ;chromoview: Visualisation and assembly of chromosomes from overlapping BACs (TPFs to AGPs)
 ;humscripts: Mostly legacy scripts used in the humpub account
 ;utils: A few useful scripts mostly written by James eg: new_module for creating a new Perl module
+
+== CVS usage notes ==
+* <code>ensembl-*</code> repositories are stored on <code>cvs.sanger.ac.uk</code> under <code>/cvsroot/ensembl</code>, but we do not have ssh access to this server and so have to use sftp. You can still do useful things like <code>chmod</code> on scripts, but the filenames seem to have <code>,v</code> appended to them, just use this in the command, e.g.:
+<pre>
+chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,v
+</pre>
+* Other repositories (e.g. for <code>PerlModules</code> and <code>humscripts</code>) are stored on <code>cvs.internal.sanger.ac.uk</code> under <code>/repos/cvs/anacode</code> and we do have ssh access to this machine.
+* To get cvs to update new directories as well as files try <code>cvs update -d</code>
+* To revert a file (i.e. trash all local changes) to the latest version from the repo try <code>cvs update -C <filename></code>, the locally modified file is saved to <code>.#<filename>.<version></code>
