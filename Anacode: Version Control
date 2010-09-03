@@ -21,6 +21,26 @@
 ;humscripts: Mostly legacy scripts used in the humpub account
 ;utils: A few useful scripts mostly written by James eg: new_module for creating a new Perl module
 
+=== (tmp section / another incomplete view of the same) ===
+
+{| border=1
+! Obtain !! Contains !! Web?
+|-
+|
+ cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout . -d cvswork-anacode
+| team projects...
+| [http://intcvs1.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=anacode]
+|-
+|
+| The EnsEMBL project (all of it)
+| [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=ensembl]
+|-
+| 
+ git clone intcvs1:/repos/git/anacode/trac.git
+| The repository followed by Anacode Trac; currently empty.
+|}
+
+
 == CVS usage notes ==
 * <code>ensembl-*</code> repositories are stored on <code>cvs.sanger.ac.uk</code> under <code>/cvsroot/ensembl</code>, but we do not have ssh access to this server and so have to use sftp. You can still do useful things like <code>chmod</code> on scripts, but the filenames seem to have <code>,v</code> appended to them, just use this in the command, e.g.:
 <pre>
