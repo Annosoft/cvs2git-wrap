@@ -49,3 +49,38 @@ chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,
 * Other repositories (e.g. for <code>PerlModules</code> and <code>humscripts</code>) are stored on <code>cvs.internal.sanger.ac.uk</code> under <code>/repos/cvs/anacode</code> and we do have ssh access to this machine.
 * To get cvs to update new directories as well as files try <code>cvs update -d</code>
 * To revert a file (i.e. trash all local changes) to the latest version from the repo try <code>cvs update -C <filename></code>, the locally modified file is saved to <code>.#<filename>.<version></code>
+
+== Migration to Git ==
+We are hoping to migrate team-owned code from CVS to Git.
+
+=== Other people involved ===
+We haven't discussed it outside the team much, yet.
+* zmap
+* vega
+
+=== Possible tools ===
+As listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+==== git-cvsimport (uses cvsps) ====
+* Consider using [http://www.cobite.com/cvsps/ 2.2b1] (not in Debian yet) because it [http://thread.gmane.org/gmane.comp.version-control.git/78674 fixes some bugs]
+* Allows incremental imports
+* mca has used this (but not for real) and seen some of its limitations
+
+==== cvs2git ====
+* "Does a better job".
+* "scp -rp" can get hold of the ,v files from the ensembl repo.
+* http://cvs2svn.tigris.org/cvs2git.html and http://cvs2svn.tigris.org/features.html
+
+==== Tailor ====
+* http://progetti.arstecnica.it/tailor/wiki
+
+=== Mapping of CVS modules to git repos ===
+Something mca thinks is necessary, but hasn't yet shown an example.
+
+=== Mapping of CVS version numbers, per file, to Git commit ids ===
+We'll disable keyword expansion, so it may be necessary to record this mapping elsewhere (e.g. separate file per git repo).
+YAGNI?  But can we get it back later?
+
+=== CVS fixups ===
+jh13 has done some,
+* Removing dependence on keyword expansion, by removing <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> type tricks.
+* Fixing -kb and executable flags.
