@@ -84,3 +84,53 @@ YAGNI?  But can we get it back later?
 jh13 has done some,
 * Removing dependence on keyword expansion, by removing <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> type tricks.
 * Fixing -kb and executable flags.
+
+== Deployment + Debugging ==
+Many scripts are (?) intended to be run from the developer's checkout, using the prevailing PERL5LIB.
+
+=== Otterlace client + server ===
+It should be possible to run both client & server from developer checkouts, but this is not (yet) straightforward.
+
+See [[Otterlace stuff]].
+
+Server side options,
+;intwebdev per-developer installs: set up intwebdev/cgi-bin/users/''foo''/otter/ to look like www.sanger.ac.uk/cgi-bin/otter/
+:* nothing to maintain, beyond placing the code
+:* dev environment is closest to production
+:* logfiles are hard to obtain, filter and read
+;local webserver install: run the server CGIs under a local webserver to retain complete control.
+:* have to choose, configure & maintain it
+:* pinch the EnsEMBL dev Apache setup from /software ?
+:* can also run long-lived CGI queries, which simplifies some report pages and may make it easier to debug slow production queries
+:* dev environment differs from production in paths, hostnames, port numbers etc.
+:* requires hacked up SangerPaths
+:* direct access to uncluttered logfiles
+;reroute HTTP fetches to become subprocess forks: cut the HTTP protocol out completely.
+:* Otter has one centralised HTTP fetcher, which could easily be replaced
+:* ZMap data fetchers also do HTTTP, but (?) using the Otter code
+:* dev environment may exhibit different set of bugs to production!
+:* requires severely hacked SangerPaths
+:* "CGI" log output needs putting somewhere
+
+=== Otterlace configuration ===
+
+[[Otterlace_stuff#Publishing_config_files|Config files]] are currently not in CVS.  Some of it needs to be independent of the code release cycle.
+
+=== Deploying to web-team servers ===
+
+This applies to
+* the Otterlace server (the major production item), and some other tools
+* dbchk
+* JH's healthcheck page
+
+Currently we have a mixture of CVS subtree checkouts and ad-hoc or non-version-controlled files.
+
+Assuming the source checkout is a git repository,
+; deploy by rsync : webserver files are overwritten with the new copies
+:* commiting from the live (or wwwdev) site becomes difficult
+:* hacking live site is strongly discouraged
+:* <tt>rsync -n</tt> or <tt>diff</tt> can tell of modifications on either side, but not where the diff came from
+:* modifications to live site are likely to be tromped without notice
+; deploy by git-subtree-branch (mca) : create git checkout containing only the desired files
+:* it's an unusual / custom mechanism
+:* it is possible to hack & commit on the server, then cherry-pick commits back onto the master (text changes track across the rename, but new files don't)
