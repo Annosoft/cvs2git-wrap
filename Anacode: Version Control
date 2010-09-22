@@ -50,7 +50,7 @@ chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,
 * To get cvs to update new directories as well as files try <code>cvs update -d</code>
 * To revert a file (i.e. trash all local changes) to the latest version from the repo try <code>cvs update -C <filename></code>, the locally modified file is saved to <code>.#<filename>.<version></code>
 
-=== Branches and tags ===
+=== CVS tags ===
 
 The Ensembl code has its own branching and tagging structure, documented elsewhere.  Anacode uses an Ensembl release and avoids making changes to it.
 
