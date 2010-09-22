@@ -54,7 +54,11 @@ chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,
 
 The Ensembl code has its own branching and tagging structure, documented elsewhere.  Anacode uses an Ensembl release and avoids making changes to it.
 
-Anacode uses tags with the same name modules in the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN</tt>, where NN is the version number incorporated into the URL for the server scripts. At this point a new dev_otterlace is made for continuing development, with a new version number. Minor fixes to the new test/production release code are tagged using <tt>cvs tag -F humpub-release-NN</tt>, followed by CVS updating the changed CVS modules in <tt>/software/anacode/otter/otter_relNN</tt>.
+For each release of the otterlace system, the same tag is used in all of the CVS modules used in otterlace from the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN</tt>, where NN is the version number incorporated into the URL for the server scripts. (At this point a new dev_otterlace is made for continuing development, with a new version number.) Minor fixes to the new test/production release code are tagged using:
+
+<pre>cvs tag -F humpub-release-NN</pre>
+
+followed by CVS updating the changed CVS modules in <tt>/software/anacode/otter/otter_relNN</tt>.
 
 == Migration to Git ==
 We are hoping to migrate team-owned code from CVS to Git.
