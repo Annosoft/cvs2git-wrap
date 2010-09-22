@@ -50,6 +50,17 @@ chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,
 * To get cvs to update new directories as well as files try <code>cvs update -d</code>
 * To revert a file (i.e. trash all local changes) to the latest version from the repo try <code>cvs update -C <filename></code>, the locally modified file is saved to <code>.#<filename>.<version></code>
 
+=== Branches and tags ===
+
+The Ensembl code has its own branching and tagging structure, documented elsewhere.  Anacode mostly uses a release and avoids making changes to it.
+
+Anacode uses tags and branches with the same name '''across several modules''' in the '''two repositories'''.
+
+; <tt>humpub-branch-NN</tt> : the branch containing a release, and any maintenance revisions.
+; <tt>humpub-release-NN</tt> : a non-branch tag on MAIN, marking the departure of <tt>humpub-branch-NN</tt>.
+
+There are also other ad-hoc tags, release tagging conventions and some variations on the theme.
+
 == Migration to Git ==
 We are hoping to migrate team-owned code from CVS to Git.
 
