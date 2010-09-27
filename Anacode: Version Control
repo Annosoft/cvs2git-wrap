@@ -63,6 +63,10 @@ followed by CVS updating the changed CVS modules in <tt>/software/anacode/otter/
 == Migration to Git ==
 We are hoping to migrate team-owned code from CVS to Git.
 
+=== Trac integration ===
+* Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
+* [[SIRT:187199]] says wait on [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563391 BTS 563391].  mca is subscribed.
+
 === Other people involved ===
 We haven't discussed it outside the team much, yet.
 * zmap
