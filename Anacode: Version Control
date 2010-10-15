@@ -84,10 +84,12 @@ As listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_to
 * mca has used both steps for [[BSVN:20191|production work]].
 
 ==== cvs2git ====
-* "Does a better job".
+* "Does a better job".  ''says who? I forget.''
 * "scp -rp" can get hold of the ,v files from the ensembl repo.
 * http://cvs2svn.tigris.org/cvs2git.html and http://cvs2svn.tigris.org/features.html
 * Based on cvs2svn code?
+* It is one-shot, but [http://www.oak.homeunix.org/~marcel/blog/2009/06/03/tracking-cvs-with-git-using-cvs2git can be made incremental].
+** mca likes the sounds of this approach.
 
 ==== Tailor ====
 * http://progetti.arstecnica.it/tailor/wiki
