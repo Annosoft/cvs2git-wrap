@@ -79,10 +79,15 @@ As listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_to
 * Allows incremental imports
 * mca has used this (but not for real) and seen some of its limitations
 
+==== cvs2svn + git-svn ====
+* Two-step conversion is doubly tedious.
+* mca has used both steps for [[BSVN:20191|production work]].
+
 ==== cvs2git ====
 * "Does a better job".
 * "scp -rp" can get hold of the ,v files from the ensembl repo.
 * http://cvs2svn.tigris.org/cvs2git.html and http://cvs2svn.tigris.org/features.html
+* Based on cvs2svn code?
 
 ==== Tailor ====
 * http://progetti.arstecnica.it/tailor/wiki
