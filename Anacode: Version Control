@@ -106,6 +106,9 @@ jh13 has done some,
 * Removing dependence on keyword expansion, by removing <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> type tricks.
 * Fixing -kb and executable flags.
 
+Pending issues,
+* Beware CRLF conversion, it's [http://thread.gmane.org/gmane.comp.version-control.git/110152 messy].
+
 == Deployment + Debugging ==
 Many scripts are (?) intended to be run from the developer's checkout, using the prevailing PERL5LIB.
 
