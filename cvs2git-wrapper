@@ -1,0 +1,40 @@
+#! /bin/sh
+
+# This is a slightly general-purpose hacking around type of wrapper
+# script...
+
+: ${PROJ:=bar}
+
+echo Project $PROJ ...
+
+set -e
+set -x
+
+REPODIR=/tmp/repos-$PROJ
+
+# Import the CVSROOT separately, unless you think it has branches or
+# synchronised commits.  It tends to add merge-noise.
+rm -vf $REPODIR/CVSROOT/*,v
+
+mkdir /tmp/$PROJ
+cd /tmp/$PROJ
+
+~/bin/cvs2git --username cvs2git --keep-cvsignore --cvs-revnums \
+    --blobfile out.blob --dumpfile out.dump \
+    $REPODIR
+git init
+cat out.* | git fast-import
+
+rm -v out.blob out.dump
+git gc
+git checkout HEAD
+
+cd /
+mv /tmp/$PROJ ~/gitwk-cvs2git-test
+
+cd ~/gitwk-cvs2git-test/$PROJ
+gitk --all &
+
+
+# check some diffs at tags & branch tips
+# check branch structure

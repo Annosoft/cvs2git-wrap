@@ -1,0 +1,14 @@
+#! /bin/sh
+
+# This is a wrapper script to set the install path (I use v2.3.0) and
+# run the program there
+
+CVS2SVN_INST="$HOME/gitwk-ext/cvs2svn/INST.230/software/python-2.5"
+if [ ! -d $CVS2SVN_INST ]; then
+    echo -e "cvs2svn: install expected in\n  $CVS2SVN_INST\n but not found.  mca had an install of this 2010-11 to 2011-03" >&2
+    exit 1
+fi
+
+export PYTHONPATH="$CVS2SVN_INST/lib/python2.5/site-packages"
+
+exec $CVS2SVN_INST/bin/cvs2git $*
