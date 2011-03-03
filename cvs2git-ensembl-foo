@@ -1,0 +1,138 @@
+#! /bin/sh
+
+# Written using Git 1.7.2.3 but should work with older...
+#
+# Recommend running like
+#    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
+
+
+fetchrepo() {
+    mkdir -p $REPOCVS/CVSROOT/Emptydir
+    scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/$PROJ $REPOCVS/
+
+# Provide enough CVSROOT to operate.
+#
+# Don't copy history, taglog or commitlog (too big)
+# Don't include the ,v files because they won't have our tags, and we
+# aren't going to import them
+    scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/CVSROOT/{modules,loginfo,commitinfo,cvswrappers,config,taginfo,verifymsg,editinfo,rcsinfo,notify,checkoutlist,cvsignore} $REPOCVS/CVSROOT/
+
+# Fix up the config file to let us do checkouts
+    mkdir $C2G_TMP/locks
+    perl -i~ -pe 'BEGIN { $ct = shift } s{^LockDir=.*}{#$&\nLockDir=$ct/locks}' $C2G_TMP $REPOCVS/CVSROOT/config
+}
+
+unpack_hwime() { # here's one I made earlier
+    fn=$1
+    cd $C2G_TMP
+    [ -e $fn ] || return 1
+    tar xfz $fn
+    return 0
+}
+
+do_import() {
+    mkdir $REPOGIT
+    cd $REPOGIT
+    cvs2git  --username cvs2git --keep-cvsignore --cvs-revnums \
+	--blobfile out.blob --dumpfile out.dump \
+	-q \
+	$REPOCVS
+    git init
+    cat out.* | git fast-import
+
+    # Tidy up and make a neat checkout
+    rm -v out.blob out.dump
+    git gc
+}
+
+checktag() {
+    mkdir -p $C2G_TMP/checkrevs/
+    CHKNAME="$C2G_TMP/checkrevs/"$( echo "$*.diff" | tr ' ' , )
+    CVSREV=$1
+    GITREV=${2:-$CVSREV}
+
+    # Make a fresh CVS checkout
+    CVSCO=$C2G_TMP/cvsco
+    GITCO=$C2G_TMP/gitco
+    rm -rf $CVSCO $GITCO
+    mkdir $CVSCO $GITCO
+    cd $CVSCO
+    cvs -q -d $REPOCVS co -d $CVSCO -r $CVSREV . > /dev/null
+
+    # Make a hardlinked-objects git clone
+    cd $C2G_TMP
+    git clone -qnl $REPOGIT $GITCO
+    (cd $GITCO && git reset --hard $GITREV)
+
+    # Compare; return the exit code rather than barfing, because we
+    # want to check some more after
+    diff -xCVS -x.git -ru $CVSCO $GITCO > $CHKNAME || return $?
+}
+
+
+# We assume this for error catching
+set -e
+
+# Verbosity is optional
+#set -x
+
+GIDIR=$(
+    cd $( dirname $0 )
+    echo $PWD
+)
+export PATH=$GIDIR:$PATH
+
+PROJ=ensembl-${1:-foo}
+echo Running for PROJ=$PROJ
+
+C2G_TMP=`mktemp -d -t cvs2git-$PROJ.XXXXXX`
+echo "C2G_TMP=$C2G_TMP .  Leaving you to clean up."
+
+REPOCVS=$C2G_TMP/repo
+
+REPOGIT=$C2G_TMP/git
+
+unpack_hwime /tmp/ensembl-otter.repo.tgz || fetchrepo
+unpack_hwime /tmp/ensembl-otter.git.tgz  || do_import
+### squirrel away some shortcut tarballs?  nb. keep or make the original CVSROOT/config LockDir
+# (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.repo.tgz repo locks)
+# (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.git.tgz git)
+
+cd $REPOGIT
+git checkout HEAD
+echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
+
+cd $C2G_TMP
+diffok=0
+diffbad=0
+refs_tag=$( cd $REPOGIT; git tag -l)
+refs_branch=$( cd $REPOGIT; git branch --no-color -r | perl -ne 's/^\s+//; s{^origin/}{}; next if m{^HEAD ->}; print' )
+
+bumpcount() {
+    if [ -z $1 ]; then
+	diffok=$[ $diffok + 1 ]
+    else
+	diffbad=$[ $diffbad + 1 ]
+    fi
+}
+
+cat > $C2G_TMP/checkrevs.txt <<LST
+Will compare CVS vs. Git contents for
+
+  HEAD vs. master
+
+  tags: $refs_tag
+
+  branches: $refs_branch
+
+LST
+cat $C2G_TMP/checkrevs.txt
+checktag HEAD master
+bumpcount $?
+for tag in $refs_tag $refs_branch; do
+    checktag $tag
+    bumpcount $?
+done
+
+echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
+
