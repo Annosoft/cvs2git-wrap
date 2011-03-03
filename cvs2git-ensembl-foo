@@ -45,6 +45,10 @@ do_import() {
     git gc
 }
 
+
+diffok=0
+diffbad=0
+
 checktag() {
     mkdir -p $C2G_TMP/checkrevs/
     CHKNAME="$C2G_TMP/checkrevs/"$( echo "$*.diff" | tr ' ' , )
@@ -53,20 +57,30 @@ checktag() {
 
     # Make a fresh CVS checkout
     CVSCO=$C2G_TMP/cvsco
-    GITCO=$C2G_TMP/gitco
-    rm -rf $CVSCO $GITCO
-    mkdir $CVSCO $GITCO
+    GITCO=$C2G_TMP/git
+    rm -rf $CVSCO
+    mkdir $CVSCO
     cd $CVSCO
     cvs -q -d $REPOCVS co -d $CVSCO -r $CVSREV . > /dev/null
 
-    # Make a hardlinked-objects git clone
-    cd $C2G_TMP
-    git clone -qnl $REPOGIT $GITCO
-    (cd $GITCO && git reset --hard $GITREV)
+    # Put the git working copy where we want it.
+    #
+    # Avoid making a clone, because then we have to deal with branches
+    # having the origin/ prefix when tags do not.
+    cd $GITCO
+    if ! git show-ref _diff_to_cvs > /dev/null; then
+	git branch _diff_to_cvs
+    fi
+    git checkout -q _diff_to_cvs
+    git reset --hard $GITREV
 
     # Compare; return the exit code rather than barfing, because we
     # want to check some more after
-    diff -xCVS -x.git -ru $CVSCO $GITCO > $CHKNAME || return $?
+    if diff -xCVS -x.git -ru $CVSCO $GITCO > $CHKNAME; then
+	diffok=$[ $diffok + 1 ]
+    else
+	diffbad=$[ $diffbad + 1 ]
+    fi
 }
 
 
@@ -98,41 +112,37 @@ unpack_hwime /tmp/ensembl-otter.git.tgz  || do_import
 # (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.repo.tgz repo locks)
 # (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.git.tgz git)
 
-cd $REPOGIT
-git checkout HEAD
 echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
 
+cd $REPOGIT
+refs_tag=$( git tag -l | perl -pe 's/^/    /')
+refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}; s{^}{    }; print' )
 cd $C2G_TMP
-diffok=0
-diffbad=0
-refs_tag=$( cd $REPOGIT; git tag -l)
-refs_branch=$( cd $REPOGIT; git branch --no-color -r | perl -ne 's/^\s+//; s{^origin/}{}; next if m{^HEAD ->}; print' )
-
-bumpcount() {
-    if [ -z $1 ]; then
-	diffok=$[ $diffok + 1 ]
-    else
-	diffbad=$[ $diffbad + 1 ]
-    fi
-}
 
 cat > $C2G_TMP/checkrevs.txt <<LST
 Will compare CVS vs. Git contents for
 
   HEAD vs. master
 
-  tags: $refs_tag
+  tags:
+$refs_tag
 
-  branches: $refs_branch
+  branches:
+$refs_branch
+
 
 LST
 cat $C2G_TMP/checkrevs.txt
 checktag HEAD master
-bumpcount $?
 for tag in $refs_tag $refs_branch; do
     checktag $tag
-    bumpcount $?
 done
 
-echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
+# Reset the repo to a plain master
+cd $REPOGIT
+git checkout -q master
+git branch -D _diff_to_cvs
 
+# Show diffing summary
+echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
+find $C2G_TMP/checkrevs/ -type f -size +0 -ls
