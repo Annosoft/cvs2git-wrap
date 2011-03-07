@@ -122,6 +122,7 @@ Still necessary,
 * Move CVS branches and/or tags down a namespace level?
 ** To clear the boards for a fresh namespace in Git
 ** To keep a clear record of what came from CVS
+** To allow a two-clone split for "what was in CVS" and "The Future".  One might obtain the union of these refs by fetching from both repos.
 * Find and remove CVS keywords
 * Find and remove explicit references to CVS
 ** Mostly in POD + comments
