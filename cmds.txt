@@ -3,14 +3,6 @@ FOO=anacode
 
 rsync -aiWSH --del intcvs1:/repos/cvs/$FOO/ /tmp/repos-$FOO
 
-mkdir /tmp/repos-ensembl-otter
-rm -rf /tmp/repos-ensembl-otter/CVSROOT;       scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/CVSROOT /tmp/repos-ensembl-otter
-rm -rf /tmp/repos-ensembl-otter/ensembl-otter; scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/ensembl-otter /tmp/repos-ensembl-otter
-
 time nice env PROJ=anacode ~/bin/cvs2git-wrapper
-time nice env PROJ=ensembl-otter ~/bin/cvs2git-wrapper
 
-
-# Tried 'git cvsimport' and see that it simply drops branches it can't cope with.
-mkdir /tmp/ensembl-otter2
-git cvsimport  -v  -d /tmp/repos-ensembl-otter -C /tmp/ensembl-otter2  -r cvs  -i -k -a -R  ensembl-otter
+# nb. "anacode" repo contains several sub-projects...
