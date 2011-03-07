@@ -1,6 +1,7 @@
 #! /bin/sh
 
-# Written using Git 1.7.2.3 but should work with older...
+# Written using Git 1.7.2.3, may work with older but needs "git
+# checkout --orphan"
 #
 # Recommend running like
 #    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
@@ -42,7 +43,29 @@ do_import() {
 
     # Tidy up and make a neat checkout
     rm -v out.blob out.dump
-    git gc
+}
+
+prepend_initialempty() {
+
+    # Find first CVS commit
+    COMMIT1=$( git log --format=tformat:%H master | tail -n1 )
+
+    # Make the IEC
+    git checkout --orphan _iec
+    git rm -q --cached -r .
+    git commit --allow-empty -m "$( echo -e "initial empty commit.\n\nthis was made just after the cvs2git import process" )"
+    COMMIT0=$( git show-ref -s _iec )
+
+    # Graft
+    echo $COMMIT1 $COMMIT0 > .git/info/grafts
+    git filter-branch -- --all
+    rm .git/info/grafts
+
+    # Tidy up
+    git reset --hard HEAD
+    git clean -fdqx
+    git checkout master
+    git branch -D _iec
 }
 
 
@@ -100,7 +123,7 @@ PROJ=ensembl-${1:-foo}
 echo Running for PROJ=$PROJ
 
 C2G_TMP=`mktemp -d -t cvs2git-$PROJ.XXXXXX`
-echo "C2G_TMP=$C2G_TMP .  Leaving you to clean up."
+trap 'echo -e "\nLeaving you to clean up: C2G_TMP=$C2G_TMP\n  rm -rf $C2G_TMP"' EXIT
 
 REPOCVS=$C2G_TMP/repo
 
@@ -117,7 +140,6 @@ echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
 cd $REPOGIT
 refs_tag=$( git tag -l | perl -pe 's/^/    /')
 refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}; s{^}{    }; print' )
-cd $C2G_TMP
 
 cat > $C2G_TMP/checkrevs.txt <<LST
 Will compare CVS vs. Git contents for
@@ -133,6 +155,13 @@ $refs_branch
 
 LST
 cat $C2G_TMP/checkrevs.txt
+
+# Prepend to history an empty commit, because they can be useful later
+# Note that we already have refnames.  Commitids will all change.
+cd $REPOGIT
+prepend_initialempty
+
+cd $C2G_TMP
 checktag HEAD master
 for tag in $refs_tag $refs_branch; do
     checktag $tag
@@ -140,7 +169,10 @@ done
 
 # Reset the repo to a plain master
 cd $REPOGIT
+git gc
 git checkout -q master
+git reset --hard HEAD
+git clean -fdqx
 git branch -D _diff_to_cvs
 
 # Show diffing summary
