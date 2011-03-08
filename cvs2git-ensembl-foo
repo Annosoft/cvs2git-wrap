@@ -169,11 +169,13 @@ done
 
 # Reset the repo to a plain master
 cd $REPOGIT
+rm -r .git/refs/original
 git gc
 git checkout -q master
 git reset --hard HEAD
 git clean -fdqx
 git branch -D _diff_to_cvs
+
 
 # Show diffing summary
 echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
