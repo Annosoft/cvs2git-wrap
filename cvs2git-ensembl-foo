@@ -167,6 +167,19 @@ for tag in $refs_tag $refs_branch; do
     checktag $tag
 done
 
+# Rename all CVS branches & tags down a level
+for ref in $refs_branch; do
+    git branch -m $ref cvs/$ref
+done
+for ref in $refs_tag; do
+    echo -ne "Create tag cvs/$ref; \t"
+    git tag cvs/$ref $ref
+    git tag -d $ref
+done
+# Retain master from CVS MAIN
+git branch cvs/main master
+
+
 # Reset the repo to a plain master
 cd $REPOGIT
 rm -r .git/refs/original
