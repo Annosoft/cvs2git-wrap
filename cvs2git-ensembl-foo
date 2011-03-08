@@ -50,11 +50,16 @@ prepend_initialempty() {
     # Find first CVS commit
     COMMIT1=$( git log --format=tformat:%H master | tail -n1 )
 
-    # Make the IEC
+    # Make the IEC, with explicit control to have a stable commitid
     git checkout --orphan _iec
     git rm -q --cached -r .
-    git commit --allow-empty -m "$( echo -e "initial empty commit.\n\nthis was made just after the cvs2git import process" )"
-    COMMIT0=$( git show-ref -s _iec )
+    COMMIT0=$(
+	echo -e "initial empty commit.\n\nthis was made just after the cvs2git import process" | \
+	    GIT_AUTHOR_EMAIL=iec GIT_AUTHOR_NAME=iec GIT_COMMITTER_EMAIL=iec GIT_COMMITTER_NAME=iec \
+	    GIT_AUTHOR_DATE='2011-03-08 16:20:00'    GIT_COMMITTER_DATE='2000-01-01 00:00:00' \
+	    git commit-tree $( git write-tree )
+	)
+    git update-ref -m prepend_initialempty HEAD $COMMIT0
 
     # Graft
     echo $COMMIT1 $COMMIT0 > .git/info/grafts
