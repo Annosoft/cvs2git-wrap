@@ -31,6 +31,19 @@ unpack_hwime() { # here's one I made earlier
     return 0
 }
 
+canon_repocvs() {
+    # The path to $REPOCVS may appear in $Header keywords, which
+    # breaks repeatable imports.
+    #
+    # Canonicalise it (but beware this won't work on a shared machine
+    # where someone else ran this script already)
+
+    linkname=$( tempfile -d /tmp )
+    ln -snvf $REPOCVS $linkname
+    REPOCVS=/tmp/ENSCOPY
+    mv -T $linkname $REPOCVS
+}
+
 do_import() {
     mkdir $REPOGIT
     cd $REPOGIT
@@ -135,6 +148,8 @@ REPOCVS=$C2G_TMP/repo
 REPOGIT=$C2G_TMP/git
 
 unpack_hwime /tmp/ensembl-otter.repo.tgz || fetchrepo
+canon_repocvs
+
 unpack_hwime /tmp/ensembl-otter.git.tgz  || do_import
 ### squirrel away some shortcut tarballs?  nb. keep or make the original CVSROOT/config LockDir
 # (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.repo.tgz repo locks)
