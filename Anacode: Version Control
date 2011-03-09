@@ -136,6 +136,7 @@ jh13 has done some,
 Pending issues,
 * Beware CRLF conversion, it's [http://thread.gmane.org/gmane.comp.version-control.git/110152 messy].
 *: ''But should be easy on Un*x, right...?''
+* Eventually, place a "we have moved to ..." file and make the rest of the old CVS module read-only for everyone.  [[SIRT:207328]].
 
 == Deployment + Debugging ==
 Many scripts are (?) intended to be run from the developer's checkout, using the prevailing PERL5LIB.
