@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # Third-level wrapper: do the import again, push to central repo.
-# Makes local assumptions: rederr, otter, intcvs1
+# Makes local assumptions: rederr, otter, intcvs1, ssh-agent
 
 set -e
 
@@ -21,10 +21,20 @@ fi
 
 # Make a sub-tmp directory
 export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t otter.XXXXXX )
-
-# Do import
 IMPLOG=$TMPDIR/import.$$.log
-if ionice -n7 nice ~/bin/rederr $GIDIR/cvs2git-ensembl-foo otter > $IMPLOG; then
+
+
+do_import() {
+    # Assume there is just one ssh-agent running; don't pester the X11 user
+    export SSH_AGENT_PID=$( pidof ssh-agent )
+    export SSH_AUTH_SOCK=$( echo /tmp/keyring-*/ssh )
+    DISPLAY=
+
+    ionice -n7 nice ~/bin/rederr \
+	$GIDIR/cvs2git-ensembl-foo otter > $IMPLOG
+}
+
+if do_import; then
     :
     # success
 else
@@ -33,7 +43,6 @@ else
     exit 8
 fi
 
-#set -x
 cd $TMPDIR/cvs2git-ensembl-otter.*/git
 
 git remote add origin intcvs1:/repos/git/anacode/ensembl-otter-TRIAL-RUN.git
