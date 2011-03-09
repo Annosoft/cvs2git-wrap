@@ -12,11 +12,26 @@ GIDIR=$(
 )
 export PATH=$GIDIR:$PATH
 
+# Guard against cronjob stack-up or headbanging failure
+if [ -d /dev/shm/otter.* ]; then
+    echo -e "Still running?\n"
+    ls -lart /dev/shm/otter.*
+    exit 7
+fi
+
 # Make a sub-tmp directory
 export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t otter.XXXXXX )
 
 # Do import
-~/bin/rederr $GIDIR/cvs2git-ensembl-foo otter > $TMPDIR/import.log
+IMPLOG=$TMPDIR/import.$$.log
+if ionice -n7 nice ~/bin/rederr $GIDIR/cvs2git-ensembl-foo otter > $IMPLOG; then
+    :
+    # success
+else
+    echo -e "Failed\n" >&2
+    tail -v $IMPLOG >&2
+    exit 8
+fi
 
 #set -x
 cd $TMPDIR/cvs2git-ensembl-otter.*/git
