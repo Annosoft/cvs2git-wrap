@@ -1,7 +1,10 @@
 #! /bin/sh
 
 # Third-level wrapper: do the import again, push to central repo.
-# Makes local assumptions: rederr, otter, intcvs1, ssh-agent
+# Makes local assumptions: rederr, otter, intcvs1
+#
+# Anacode team members only need to provide: ~/bin/rederr -> ~mca/bin/rederr
+#  or some other wrapper script which sends (stderr, stdout) to stdout.
 
 set -e
 
@@ -25,9 +28,7 @@ IMPLOG=$TMPDIR/import.$$.log
 
 
 do_import() {
-    # Assume there is just one ssh-agent running; don't pester the X11 user
-    export SSH_AGENT_PID=$( pidof ssh-agent )
-    export SSH_AUTH_SOCK=$( echo /tmp/keyring-*/ssh )
+    # Assume ~/.ssh/config is correct.  If not, don't pester the X11 user.
     DISPLAY=
 
     ionice -n7 nice ~/bin/rederr \
