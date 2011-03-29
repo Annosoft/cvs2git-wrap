@@ -19,6 +19,7 @@ export PATH=$GIDIR:$PATH
 if [ -d /dev/shm/otter.* ]; then
     echo -e "Still running?\n"
     ls -lart /dev/shm/otter.*
+    tail -v -n10 /dev/shm/otter.*/import.*.log
     exit 7
 fi
 
