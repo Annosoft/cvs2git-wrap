@@ -78,13 +78,8 @@ checktag() {
     CVSREV=$1
     GITREV=${2:-$CVSREV}
 
-    # Make a fresh CVS checkout
     CVSCO=$C2G_TMP/cvsco
     GITCO=$C2G_TMP/git
-    rm -rf $CVSCO
-    mkdir $CVSCO
-    cd $CVSCO
-    cvs -q -d $REPOCVS co -d $CVSCO -r $CVSREV . > /dev/null
 
     # Put the git working copy where we want it.
     #
@@ -97,8 +92,25 @@ checktag() {
     git checkout -q _diff_to_cvs
     git reset --hard $GITREV
 
+    # If we have this commit already, there is no point hammering CVS
+    # again to diff it.  Short-circuit to OK.
+    if [ -f "$KNOWN_GOOD_CILIST" ]; then
+	CIID=$( git log -1 --format=%H )
+	if grep $CIID $KNOWN_GOOD_CILIST > /dev/null; then
+	    echo "  checktag $CVSREV vs $GITREV: $CIID is in $KNOWN_GOOD_CILIST"
+	    return 0
+	fi
+    fi
+
+    # Make a fresh CVS checkout
+    rm -rf $CVSCO
+    mkdir $CVSCO
+    cd $CVSCO
+    cvs -q -d $REPOCVS co -d $CVSCO -r $CVSREV . > /dev/null
+
     # Compare; return the exit code rather than barfing, because we
     # want to check some more after
+    cd $GITCO
     if diff -xCVS -x.git -ru $CVSCO $GITCO > $CHKNAME; then
 	diffok=$[ $diffok + 1 ]
     else

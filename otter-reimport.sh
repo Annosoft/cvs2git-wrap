@@ -32,7 +32,11 @@ do_import() {
     # Assume ~/.ssh/config is correct.  If not, don't pester the X11 user.
     DISPLAY=
 
-    ionice -n7 nice ~/bin/rederr \
+#   List generated manually with
+# (cd ~/gitwk-anacode/ensembl-otter; git fetch; git show-ref | grep -E ' refs/(tags|remotes/[^/]+)/cvs/') > git-importing/otter-reimport.known-good.txt
+
+    KNOWN_GOOD_CILIST=$GIDIR/otter-reimport.known-good.txt \
+	ionice -n7 nice ~/bin/rederr \
 	$GIDIR/cvs2git-ensembl-foo otter > $IMPLOG
 }
 
