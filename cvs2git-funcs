@@ -51,22 +51,28 @@ apply_hackery() {
 do_import() {
     mkdir $REPOGIT
     cd $REPOGIT
+
+    # Build importable files
     cvs2git  --username cvs2git --keep-cvsignore --cvs-revnums \
 	--blobfile out.blob --dumpfile out.dump \
 	-q \
 	$REPOCVS
-    git init
-    cat > out.iec <<EOF
-commit refs/heads/master
+
+    # Cook up the IEC.  Option to let commitid depend on the input
+    # project name.
+    echo "commit refs/heads/master
 mark :999999999
-author iec <iec> 1299601200 +0000
-committer iec <iec> 946684800 +0000
+author ${IEC_NAME:-iec} <iec> 1299601200 +0000
+committer ${IEC_NAME:-iec} <iec> 946684800 +0000
 data 75
 initial empty commit.
 
 this was made just after the cvs2git import process
 
-EOF
+" > out.iec
+
+    # Make git repo
+    git init
     cat out.blob out.iec out.dump | git fast-import
 
     # Tidy up and make a neat checkout
