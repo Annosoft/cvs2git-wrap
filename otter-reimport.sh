@@ -65,13 +65,13 @@ fi
 
 
 # Update central repos
-git remote add origin intcvs1:/repos/git/anacode/ensembl-otter-TRIAL-RUN.git
+git remote add origin intcvs1:/repos/git/anacode/cvs/ensembl-otter.git
 git checkout -q cvs/main
 git branch -D master > /dev/null 
 git push -q origin --tags
 git push -q origin --all
 
-git remote add nocvs intcvs1:/repos/git/anacode/ensembl-otter-TRIAL-RUN-no-cvs-branches.git
+git remote add nocvs intcvs1:/repos/git/anacode/ensembl-otter.git
 git push -q nocvs cvs/main:cvs_MAIN
 
 cd /
