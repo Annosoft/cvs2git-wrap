@@ -3,6 +3,19 @@
 
 fetchrepo() {
     mkdir -p $REPOCVS/CVSROOT/Emptydir
+
+    case $PROJ in
+	ensembl*) fetchrepo_ensembl ;;
+	anacode) fetchrepo_intcvs1 ;;
+	zmap) fetchrepo_intcvs1 ;;
+	*) echo "Fetch $PROJ from which repository?" >&2
+	    exit 9 ;;
+    esac
+
+    cvsrepo_lockfix
+}
+
+fetchrepo_ensembl() {
     scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/$PROJ $REPOCVS/
 
 # Provide enough CVSROOT to operate.
@@ -11,11 +24,22 @@ fetchrepo() {
 # Don't include the ,v files because they won't have our tags, and we
 # aren't going to import them
     scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/CVSROOT/{modules,loginfo,commitinfo,cvswrappers,config,taginfo,verifymsg,editinfo,rcsinfo,notify,checkoutlist,cvsignore} $REPOCVS/CVSROOT/
+}
 
+fetchrepo_intcvs1() {
+# Don't copy history (big & pointless for us)
+#
+# It would be nice to keep a local copy so we don't fetch it all every
+# time, (the way we must for cvs.sanger.ac.uk)
+    rsync -aSWH intcvs1:/repos/cvs/$PROJ/ $REPOCVS/ --exclude CVSROOT/history --exclude 'CVSROOT/*,v'
+}
+
+cvsrepo_lockfix() {
 # Fix up the config file to let us do checkouts
     mkdir $C2G_TMP/locks
     perl -i~ -pe 'BEGIN { $ct = shift } s{^LockDir=.*}{#$&\nLockDir=$ct/locks}' $C2G_TMP $REPOCVS/CVSROOT/config
 }
+
 
 unpack_hwime() { # here's one I made earlier
     fn=$1
