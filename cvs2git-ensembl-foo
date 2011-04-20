@@ -34,15 +34,15 @@ REPOCVS=$C2G_TMP/repo
 
 REPOGIT=$C2G_TMP/git
 
-unpack_hwime /tmp/ensembl-otter.repo.tgz || fetchrepo
+unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
 canon_repocvs
 
 apply_hackery
 
-unpack_hwime /tmp/ensembl-otter.git.tgz  || do_import
+unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
 ### squirrel away some shortcut tarballs?  nb. keep or make the original CVSROOT/config LockDir
-# (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.repo.tgz repo locks)
-# (cd $C2G_TMP && tar cfz /tmp/ensembl-otter.git.tgz git)
+# (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.repo.tgz repo locks)
+# (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.git.tgz git)
 
 echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
 
