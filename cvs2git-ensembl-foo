@@ -53,13 +53,6 @@ refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}
 checktags_all
 
 clean_git_namespace
-
-# Reset the repo to a plain master
-cd $REPOGIT
-git gc
-git checkout -q master
-git reset --hard HEAD
-git clean -fdqx
-git branch -D _diff_to_cvs
+clean_git_workingcopy
 
 checktag_show_summary

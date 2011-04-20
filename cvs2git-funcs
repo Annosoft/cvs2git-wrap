@@ -100,6 +100,9 @@ this was made just after the cvs2git import process
     git init
     cat out.blob out.iec out.dump | git fast-import
 
+    # For git_preresetcheck
+    touch .git/c2g-mark
+
     # Tidy up and make a neat checkout
     rm -v out.blob out.iec out.dump
 }
@@ -119,6 +122,8 @@ checktag() {
     # Avoid making a clone, because then we have to deal with branches
     # having the origin/ prefix when tags do not.
     cd $GITCO
+    git_preresetcheck
+
     if ! git show-ref _diff_to_cvs > /dev/null; then
 	git branch _diff_to_cvs
     fi
@@ -178,6 +183,7 @@ LST
 
 clean_git_namespace() {
     cd $REPOGIT
+    git_preresetcheck
 
     # Rename all CVS branches & tags down a level
     for ref in $refs_branch; do
@@ -191,10 +197,33 @@ clean_git_namespace() {
 
     # Retain master from CVS MAIN
     git branch cvs/main master
+
+    # Clean up the temporary branch
+    git checkout -q master
+    git branch -D _diff_to_cvs
+}
+
+clean_git_workingcopy() {
+    # Reset the repo to a plain master
+    cd $REPOGIT
+    git_preresetcheck
+
+    git gc
+    git checkout -q master
+    git reset --hard HEAD
+    git clean -fdqx
 }
 
 checktag_show_summary() {
 # Show diffing summary
     echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
     find $C2G_TMP/checkrevs/ -type f -size +0 -ls
+}
+
+git_preresetcheck() {
+    # Paranoia to avoid another accident.  8-(
+    if [ ! -f ".git/c2g-mark" ]; then
+	echo ".git/c2g-mark not found - not my repo?" >&2
+	exit 11
+    fi
 }
