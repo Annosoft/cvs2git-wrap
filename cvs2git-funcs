@@ -58,7 +58,8 @@ canon_repocvs() {
 
     linkname=$( tempfile -d /tmp )
     ln -snvf $REPOCVS $linkname
-    REPOCVS=/tmp/ENSCOPY
+
+    REPOCVS=/tmp/$1
     mv -T $linkname $REPOCVS
 }
 

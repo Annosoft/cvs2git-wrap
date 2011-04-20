@@ -35,7 +35,7 @@ REPOCVS=$C2G_TMP/repo
 REPOGIT=$C2G_TMP/git
 
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
-canon_repocvs
+canon_repocvs ENSCOPY
 
 apply_hackery
 
