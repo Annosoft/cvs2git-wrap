@@ -150,3 +150,51 @@ checktag() {
 	diffbad=$[ $diffbad + 1 ]
     fi
 }
+
+
+checktags_all() { # requires $refs_tag $refs_branch
+    cat > $C2G_TMP/checkrevs.txt <<LST
+Will compare CVS vs. Git contents for
+
+  HEAD vs. master
+
+  tags:
+$refs_tag
+
+  branches:
+$refs_branch
+
+
+LST
+    cat $C2G_TMP/checkrevs.txt
+
+    cd $C2G_TMP
+    checktag HEAD master
+    for tag in $refs_tag $refs_branch; do
+	checktag $tag
+    done
+}
+
+
+clean_git_namespace() {
+    cd $REPOGIT
+
+    # Rename all CVS branches & tags down a level
+    for ref in $refs_branch; do
+	git branch -m $ref cvs/$ref
+    done
+    for ref in $refs_tag; do
+	echo -ne "Create tag cvs/$ref; \t"
+	git tag cvs/$ref $ref
+	git tag -d $ref
+    done
+
+    # Retain master from CVS MAIN
+    git branch cvs/main master
+}
+
+checktag_show_summary() {
+# Show diffing summary
+    echo -e "\n\nDiffed some tags and/or branches.\n  Found $diffok with no diff.\n  Found $diffbad with differences between CVS and Git,\n    see $C2G_TMP/checkrevs/\n\n"
+    find $C2G_TMP/checkrevs/ -type f -size +0 -ls
+}
