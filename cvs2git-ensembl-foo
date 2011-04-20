@@ -6,11 +6,7 @@
 #    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
 
 
-# We assume this for error catching
-set -e
-
-# Verbosity is optional
-#set -x
+PROJ=ensembl-${1:-foo}
 
 GIDIR=$(
     cd $( dirname $0 )
@@ -21,34 +17,12 @@ export PATH=$GIDIR:$PATH
 # Import functions
 source $GIDIR/cvs2git-funcs
 
-diffok=0
-diffbad=0
-
-PROJ=ensembl-${1:-foo}
-echo Running for PROJ=$PROJ
-
-C2G_TMP=`mktemp -d -t cvs2git-$PROJ.XXXXXX`
-trap 'echo -e "\nLeaving you to clean up: C2G_TMP=$C2G_TMP\n  rm -rf $C2G_TMP"' EXIT
-
-REPOCVS=$C2G_TMP/repo
-
-REPOGIT=$C2G_TMP/git
-
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
 canon_repocvs ENSCOPY
 
-apply_hackery
-
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
-### squirrel away some shortcut tarballs?  nb. keep or make the original CVSROOT/config LockDir
-# (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.repo.tgz repo locks)
-# (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.git.tgz git)
 
-echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
-
-cd $REPOGIT
-refs_tag=$( git tag -l | perl -pe 's/^/    /')
-refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}; s{^}{    }; print' )
+# squirrel_hwime
 
 checktags_all
 

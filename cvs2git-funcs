@@ -1,6 +1,26 @@
 # -*- shell-script -*-
 
 
+cvs2git__init() {
+    # We assume this for error catching
+    set -e
+
+# Verbosity is optional
+#set -x
+
+    diffok=0
+    diffbad=0
+
+    C2G_TMP=`mktemp -d -t cvs2git-$PROJ.XXXXXX`
+    trap 'echo -e "\nLeaving you to clean up: C2G_TMP=$C2G_TMP\n  rm -rf $C2G_TMP"' EXIT
+
+    REPOCVS=$C2G_TMP/repo
+    REPOGIT=$C2G_TMP/git
+
+    echo Running for PROJ=$PROJ in C2G_TMP=$C2G_TMP
+}
+
+
 fetchrepo() {
     mkdir -p $REPOCVS/CVSROOT/Emptydir
 
@@ -13,6 +33,7 @@ fetchrepo() {
     esac
 
     cvsrepo_lockfix
+    apply_hackery
 }
 
 fetchrepo_ensembl() {
@@ -48,6 +69,14 @@ unpack_hwime() { # here's one I made earlier
     tar xfz $fn
     return 0
 }
+
+squirrel_hwime() {
+    # squirrel away some shortcut tarballs?
+    # nb. keep or make the original CVSROOT/config LockDir
+    (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.repo.tgz repo locks)
+    (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.git.tgz git)
+}
+
 
 canon_repocvs() {
     # The path to $REPOCVS may appear in $Header keywords, which
@@ -105,6 +134,8 @@ this was made just after the cvs2git import process
 
     # Tidy up and make a neat checkout
     rm -v out.blob out.iec out.dump
+
+    echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
 }
 
 
@@ -157,7 +188,13 @@ checktag() {
 }
 
 
-checktags_all() { # requires $refs_tag $refs_branch
+# Sets $refs_tag $refs_branch
+# Creates $C2G_TMP/checkrevs{/*,.txt}
+checktags_all() {
+    cd $REPOGIT
+    refs_tag=$( git tag -l | perl -pe 's/^/    /')
+    refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}; s{^}{    }; print' )
+
     cat > $C2G_TMP/checkrevs.txt <<LST
 Will compare CVS vs. Git contents for
 
@@ -181,7 +218,7 @@ LST
 }
 
 
-clean_git_namespace() {
+clean_git_namespace() { # Requires $refs_tag $refs_branch
     cd $REPOGIT
     git_preresetcheck
 
@@ -227,3 +264,6 @@ git_preresetcheck() {
 	exit 11
     fi
 }
+
+
+cvs2git__init
