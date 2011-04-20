@@ -43,6 +43,16 @@ canon_repocvs() {
     mv -T $linkname $REPOCVS
 }
 
+apply_hackery() {
+    HACKFILE=$GIDIR/$PROJ-hackery.sh
+    if [ -f "$HACKFILE" ]; then
+	echo Applying $HACKFILE
+	$HACKFILE $REPOCVS
+    else
+	echo $HACKFILE absent, no worries
+    fi
+}
+
 do_import() {
     mkdir $REPOGIT
     cd $REPOGIT
@@ -143,6 +153,8 @@ REPOGIT=$C2G_TMP/git
 
 unpack_hwime /tmp/ensembl-otter.repo.tgz || fetchrepo
 canon_repocvs
+
+apply_hackery
 
 unpack_hwime /tmp/ensembl-otter.git.tgz  || do_import
 ### squirrel away some shortcut tarballs?  nb. keep or make the original CVSROOT/config LockDir
