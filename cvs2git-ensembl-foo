@@ -6,129 +6,6 @@
 #    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
 
 
-fetchrepo() {
-    mkdir -p $REPOCVS/CVSROOT/Emptydir
-    scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/$PROJ $REPOCVS/
-
-# Provide enough CVSROOT to operate.
-#
-# Don't copy history, taglog or commitlog (too big)
-# Don't include the ,v files because they won't have our tags, and we
-# aren't going to import them
-    scp -rp cvs.sanger.ac.uk:/cvsroot/ensembl/CVSROOT/{modules,loginfo,commitinfo,cvswrappers,config,taginfo,verifymsg,editinfo,rcsinfo,notify,checkoutlist,cvsignore} $REPOCVS/CVSROOT/
-
-# Fix up the config file to let us do checkouts
-    mkdir $C2G_TMP/locks
-    perl -i~ -pe 'BEGIN { $ct = shift } s{^LockDir=.*}{#$&\nLockDir=$ct/locks}' $C2G_TMP $REPOCVS/CVSROOT/config
-}
-
-unpack_hwime() { # here's one I made earlier
-    fn=$1
-    cd $C2G_TMP
-    [ -e $fn ] || return 1
-    tar xfz $fn
-    return 0
-}
-
-canon_repocvs() {
-    # The path to $REPOCVS may appear in $Header keywords, which
-    # breaks repeatable imports.
-    #
-    # Canonicalise it (but beware this won't work on a shared machine
-    # where someone else ran this script already)
-
-    linkname=$( tempfile -d /tmp )
-    ln -snvf $REPOCVS $linkname
-    REPOCVS=/tmp/ENSCOPY
-    mv -T $linkname $REPOCVS
-}
-
-apply_hackery() {
-    HACKFILE=$GIDIR/$PROJ-hackery.sh
-    if [ -f "$HACKFILE" ]; then
-	echo Applying $HACKFILE
-	$HACKFILE $REPOCVS
-    else
-	echo $HACKFILE absent, no worries
-    fi
-}
-
-do_import() {
-    mkdir $REPOGIT
-    cd $REPOGIT
-    cvs2git  --username cvs2git --keep-cvsignore --cvs-revnums \
-	--blobfile out.blob --dumpfile out.dump \
-	-q \
-	$REPOCVS
-    git init
-    cat > out.iec <<EOF
-commit refs/heads/master
-mark :999999999
-author iec <iec> 1299601200 +0000
-committer iec <iec> 946684800 +0000
-data 75
-initial empty commit.
-
-this was made just after the cvs2git import process
-
-EOF
-    cat out.blob out.iec out.dump | git fast-import
-
-    # Tidy up and make a neat checkout
-    rm -v out.blob out.iec out.dump
-}
-
-
-diffok=0
-diffbad=0
-
-checktag() {
-    mkdir -p $C2G_TMP/checkrevs/
-    CHKNAME="$C2G_TMP/checkrevs/"$( echo "$*.diff" | tr ' ' , )
-    CVSREV=$1
-    GITREV=${2:-$CVSREV}
-
-    CVSCO=$C2G_TMP/cvsco
-    GITCO=$C2G_TMP/git
-
-    # Put the git working copy where we want it.
-    #
-    # Avoid making a clone, because then we have to deal with branches
-    # having the origin/ prefix when tags do not.
-    cd $GITCO
-    if ! git show-ref _diff_to_cvs > /dev/null; then
-	git branch _diff_to_cvs
-    fi
-    git checkout -q _diff_to_cvs
-    git reset --hard $GITREV
-
-    # If we have this commit already, there is no point hammering CVS
-    # again to diff it.  Short-circuit to OK.
-    if [ -f "$KNOWN_GOOD_CILIST" ]; then
-	CIID=$( git log -1 --format=%H )
-	if grep $CIID $KNOWN_GOOD_CILIST > /dev/null; then
-	    echo "  checktag $CVSREV vs $GITREV: $CIID is in $KNOWN_GOOD_CILIST"
-	    return 0
-	fi
-    fi
-
-    # Make a fresh CVS checkout
-    rm -rf $CVSCO
-    mkdir $CVSCO
-    cd $CVSCO
-    cvs -q -d $REPOCVS co -d $CVSCO -r $CVSREV . > /dev/null
-
-    # Compare; return the exit code rather than barfing, because we
-    # want to check some more after
-    cd $GITCO
-    if diff -xCVS -x.git -ru $CVSCO $GITCO > $CHKNAME; then
-	diffok=$[ $diffok + 1 ]
-    else
-	diffbad=$[ $diffbad + 1 ]
-    fi
-}
-
-
 # We assume this for error catching
 set -e
 
@@ -140,6 +17,12 @@ GIDIR=$(
     echo $PWD
 )
 export PATH=$GIDIR:$PATH
+
+# Import functions
+source $GIDIR/cvs2git-funcs
+
+diffok=0
+diffbad=0
 
 PROJ=ensembl-${1:-foo}
 echo Running for PROJ=$PROJ
