@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Third-level wrapper: do the import again, push to central repo.
 # Makes local assumptions: rederr, otter, intcvs1
@@ -68,15 +68,23 @@ else
 fi
 
 
-# Update central repos
+# Align with central repos
 git remote add origin intcvs1:/repos/git/anacode/cvs/ensembl-otter.git
 git checkout -q cvs/main
 git branch -D master > /dev/null 
-git push -q origin --tags
-git push -q origin --all
 
 git remote add nocvs intcvs1:/repos/git/anacode/ensembl-otter.git
-git push -q nocvs cvs/main:cvs_MAIN
 
-cd /
-rm -rf $TMPDIR
+
+# Push and cleanup is optional.  The crontab does this but it is
+# unhelpful for interactive use.
+if [ -n "$PUSH_AND_CLEAN" ]; then
+    git push -q origin --tags
+    git push -q origin --all
+    git push -q nocvs cvs/main:cvs_MAIN
+
+    cd /
+    rm -rf $TMPDIR
+else
+    echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes"
+fi
