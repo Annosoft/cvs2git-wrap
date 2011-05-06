@@ -23,8 +23,12 @@ if [ -d /dev/shm/otter.* ]; then
     exit 7
 fi
 
-# Make a sub-tmp directory
+# Make a sub-tmp directory.  Let the team hack with it.
+umask 02
 export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t otter.XXXXXX )
+chgrp anacode $TMPDIR
+chmod g+ws,a+rx $TMPDIR
+
 IMPLOG=$TMPDIR/import.$$.log
 
 

@@ -17,6 +17,11 @@ cvs2git__init() {
     REPOCVS=$C2G_TMP/repo
     REPOGIT=$C2G_TMP/git
 
+    # mktemp gives us privacy.  We probably need to share with the
+    # team.  Let umask have its effect this way.
+    mkdir -p $C2G_TMP/checkrevs/
+    chmod -v --reference $C2G_TMP/checkrevs $C2G_TMP
+
     echo Running for PROJ=$PROJ in C2G_TMP=$C2G_TMP
 }
 
