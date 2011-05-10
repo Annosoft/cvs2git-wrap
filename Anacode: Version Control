@@ -116,7 +116,7 @@ mca has a wrapper script which works OK on the ensembl-otter module.
 * Prepends an initial empty commit
 * Runs a diff against CVS checkout for every tag and the tip of each branch
 
-Sample output pushed to [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/ensembl-otter-TRIAL-RUN.git;a=summary anacode/ensembl-otter-TRIAL-RUN.git] produced by [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=commit;h=9489120f50cf92072a439b28d0b28467da5ede81 team_tools/git-importing].
+Sample output pushed to [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] produced by [[Team tools]]/git-importing/ .
 
 Still necessary,
 * Move CVS branches and/or tags down a namespace level?
