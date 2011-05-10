@@ -66,7 +66,7 @@ We are hoping to migrate team-owned code from CVS to Git.
 === Gentle start with small new projects ===
 A handful of small projects have popped up, see [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi Gitweb].
 
-Once you are familiar with Git, you might try [http://kitenet.net/~joey/code/mr/ mr] to manage checkouts.  See the <tt>team_tools/env/</tt> for experimental config.
+Once you are familiar with Git, you might try [http://kitenet.net/~joey/code/mr/ mr] to manage checkouts.  See [[Team tools]]<tt>/env/mrconfig</tt> for experimental config.
 
 === Trac integration ===
 * Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
