@@ -79,9 +79,18 @@ git remote add nocvs intcvs1:/repos/git/anacode/ensembl-otter.git
 # Push and cleanup is optional.  The crontab does this but it is
 # unhelpful for interactive use.
 if [ -n "$PUSH_AND_CLEAN" ]; then
+    # Send up the tracking refs
     git push -q origin --tags
     git push -q origin --all
     git push -q nocvs cvs/main:cvs_MAIN
+
+    # Move nocvs/master along...  could fail if somebody pushed to it.
+    # We will mostly just be interested to hear about this, but then
+    # also "somebody" needs to do a rebase or periodic merges from
+    # cvs_MAIN.
+    if ! git push nocvs remotes/nocvs/cvs_MAIN:master; then
+	echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
+    fi
 
     cd /
     rm -rf $TMPDIR
