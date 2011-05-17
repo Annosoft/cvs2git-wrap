@@ -20,6 +20,7 @@ source $GIDIR/cvs2git-funcs
 
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
 canon_repocvs CVSREPO-$( echo $PROJ | tr a-z A-Z )
+subdir_promote
 
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
 

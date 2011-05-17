@@ -97,6 +97,20 @@ canon_repocvs() {
     mv -T $linkname $REPOCVS
 }
 
+subdir_promote() {
+    # See whether $REPOCVS contains just one subdirectory with ,v
+    # files in.  If so, promote its contents.
+    topdir=$( cd $REPOCVS; find . -type f -name '*,v' | sed -e 's|^\./||; s|/.*||' | sort -u )
+    numdirs=$( echo $topdir | wc -w )
+    if [ $numdirs = 1 ]; then
+	echo "All ,v files are under $topdir/ - promote them"
+	mv -v $REPOCVS/$topdir/* $REPOCVS/
+	rmdir $REPOCVS/$topdir
+    else
+	echo "Multiple top level directories ($topdir) prevent subdirectory promotion"
+    fi
+}
+
 apply_hackery() {
     HACKFILE=$GIDIR/$PROJ-hackery.sh
     if [ -f "$HACKFILE" ]; then
