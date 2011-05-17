@@ -18,6 +18,10 @@ export PATH=$GIDIR:$PATH
 source $GIDIR/cvs2git-funcs
 
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
+
+# XXX: The name in /tmp used here can (via keywords) end up in commits
+# Hence affects commitid; but using the same name for all
+# 'ensembl-foo's means that simultaneous runs break.
 canon_repocvs ENSCOPY
 
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
