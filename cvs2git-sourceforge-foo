@@ -1,0 +1,46 @@
+#! /bin/sh
+
+# Written using Git 1.7.2.3, may work with older
+#
+# Recommend running like
+#    TMPDIR=/dev/shm ./git-importing/cvs2git-sourceforge-foo perlunit
+
+
+PROJ=${1:-foo}
+IEC_NAME=$PROJ
+
+GIDIR=$(
+    cd $( dirname $0 )
+    echo $PWD
+)
+export PATH=$GIDIR:$PATH
+
+# Import functions
+source $GIDIR/cvs2git-funcs
+
+fetchrepo_sf() {
+    mkdir -p $REPOCVS/CVSROOT/Emptydir
+
+    # Firewall prevents fetch (by rsync protocol; would be fine with rsync-over-ssh).  Proxy via somewhere.
+    export RSYNC_CONNECT_PROG='ssh baked nc %H 873'
+
+    rsync -aSWH $PROJ.cvs.sf.net::cvsroot/$PROJ/* $REPOCVS/
+
+    cvsrepo_lockfix
+    apply_hackery
+}
+
+unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo_sf
+canon_repocvs CVSREPO-$( echo $PROJ | tr a-z A-Z )
+subdir_promote
+
+unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
+
+# squirrel_hwime
+
+checktags_all
+
+clean_git_namespace
+clean_git_workingcopy
+
+checktag_show_summary
