@@ -1,8 +1,0 @@
-
-FOO=anacode
-
-rsync -aiWSH --del intcvs1:/repos/cvs/$FOO/ /tmp/repos-$FOO
-
-time nice env PROJ=anacode ~/bin/cvs2git-wrapper
-
-# nb. "anacode" repo contains several sub-projects...
