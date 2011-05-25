@@ -36,8 +36,6 @@ subdir_promote
 
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
 
-# squirrel_hwime
-
 checktags_all
 
 clean_git_namespace
