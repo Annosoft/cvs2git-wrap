@@ -4,9 +4,13 @@
 #
 # Recommend running like
 #    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
+#
+# or for the core,
+#    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo ensembl
 
 
 PROJ=ensembl-${1:-foo}
+[ "$PROJ" = "ensembl-ensembl" ] && PROJ=ensembl
 
 GIDIR=$(
     cd $( dirname $0 )
