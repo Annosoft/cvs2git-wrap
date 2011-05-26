@@ -20,14 +20,27 @@ fi
 cd $REPO
 
 fake_lost_deltatext() {
-    perl -we 'use strict; foreach my $vsn (@ARGV) { print "\n\n$vsn\nlog\n\@THIS REVISION WAS LOST.  Taking the earliest one remaining.\n\@\ntext\n\@\@\n" }' $*
+    echo "   Write junk deltatext to $1" >&2
+    perl -we 'use strict;
+ my $file = shift;
+ my $add_junktext = ($ARGV[0] eq "-J" && shift);
+ foreach my $vsn (@ARGV) {
+   my $txt = ($add_junktext
+              ? "a0 1\nREVISION $vsn WAS LOST.  JUNK LINE INSERTED IN DELTATEXT\n"
+              : "");
+   print "\n\n$vsn\nlog\n\@THIS REVISION WAS LOST ($file v$vsn).\n
+Taking the earliest one remaining.\n\@\ntext\n\@$txt\@\n" }' $*
 }
 
 # Restore some missing (outdated?) deltatext, else cvs2git refuses to run
-fake_lost_deltatext 1.6 1.5 1.4 1.3 1.2 1.1 \
+fake_lost_deltatext \
+    modules/Bio/EnsEMBL/AceDB/Contig.pm -J \
+    1.6 1.5 1.4 1.3 1.2 1.1 \
     >> ensembl/modules/Bio/EnsEMBL/AceDB/Attic/Contig.pm,v
 
-fake_lost_deltatext 1.1.2.1 1.1.2.2 1.1.2.3 1.1.2.4 1.1.2.5 \
+fake_lost_deltatext \
+    ensembl/scripts/gtf_dump.pl -J \
+    1.1.2.1 1.1.2.2 1.1.2.3 1.1.2.4 1.1.2.5 \
     >> ensembl/scripts/Attic/gtf_dump.pl,v
 
 # Fix a non-ASCII commit comment; guess the original
