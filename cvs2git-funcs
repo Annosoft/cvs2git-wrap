@@ -129,7 +129,10 @@ apply_hackery() {
     HACKFILE=$GIDIR/$PROJ-hackery.sh
     if [ -f "$HACKFILE" ]; then
 	echo Applying $HACKFILE
-	$HACKFILE $REPOCVS
+	$HACKFILE $REPOCVS || {
+	    echo Hackery failed >&2
+	    exit 33
+	}
     else
 	echo $HACKFILE absent, no worries
     fi
