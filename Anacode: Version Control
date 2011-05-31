@@ -36,63 +36,81 @@ The Ensembl code has its own branching and tagging structure, documented elsewhe
 For each release of the otterlace system, the same tag is used in all of the CVS modules used in otterlace from the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN-MM</tt>, where NN is the version number incorporated into the URL for the server scripts. (At this point a new dev_otterlace is made for continuing development, with a new version number.) Minor fixes to the new test/production release code are tagged with an incremented ''MM'' component and checked out separately to <tt>/software/anacode/otter/otter_relNN.MM</tt>.
 
 == Migration to Git ==
-We are migrating team-owned code from CVS to Git.
+We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt>.
+This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
 
+The <tt>anacode</tt> cvs2git import is not yet ready for production use.
+
+There are also imports of other ensembl modules - these are for our internal (read-only) use, and many have problems with the branch structures.
+
+See also [[Using Git]] for some Sanger-specific notes.
+
+=== Getting <tt>ensembl-otter</tt> ===
 You can get an <tt>ensembl-otter</tt> checkout like this
-  git clone intcvs1:/repos/git/anacode/ensembl-otter.git
+ git clone intcvs1:/repos/git/anacode/ensembl-otter.git
+ cd ensembl-otter
+ 
+ # and if you need all the old CVS branches and tags
+ git remote add more intcvs1:/repos/git/anacode/cvs/ensembl-otter.git
+ git fetch more
+ 
+ # see it
+ gitk --all &
 
-All our projects are visible under [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi Gitweb].
+=== Sending changes back to Anacode ===
+Git allows decentralised development - after taking your clone (above) you are free to commit to it,
+but this does not directly affect the Anacode central copy.
 
-The <tt>anacode</tt> import is not yet ready for production use.
+If you have commits in your own clone which you would like merged to our repository, please let us know.
 
-Once you are familiar with Git, you might try [http://kitenet.net/~joey/code/mr/ mr] to manage checkouts.  See [[Team tools]]<tt>/env/mrconfig</tt> for experimental config.
+Members of the <tt>anacode</tt> group have <tt>git push</tt> access to update the central copy.
+Please speak to the team if you need to use this.
 
-=== Trac integration ===
-* Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
-* [[SIRT:187199]] says wait on [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563391 BTS 563391].  mca is subscribed.
-* Made an experimental fetch of multiple repositories' code into the one Trac-watched Git repository, under different namespaces.  This works but doesn't look especially useful. [[User:Mca|Mca]] 12:59, 31 May 2011 (UTC)
+For other projects we have used ad-hoc commits to master and merges from feature branches.
+We will trial the use of [http://nvie.com/posts/a-successful-git-branching-model/ <tt>git flow</tt>]
+for management of feature branches.
+
+We have no immediate plans to push our Git repositories to an external service, but would follow the
+[[The internal CVS / Subversion server#How can I collaborate with people externally?|Systems guidelines]].
+Compare [https://github.com/sanger] [https://github.com/VertebrateResequencing/vr-codebase/network].
 
 === Import process ===
 Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
-
-* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
-** We avoided git-cvsimport because it '''drops branches it does not understand''', such as humpub-branch-52.
-** [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer.
-** mca didn't try [http://progetti.arstecnica.it/tailor/wiki tailor].
 
 Output is pushed to
 [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] (all CVS tags and branches, no other Git pushes) and to
 [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/ensembl-otter.git anacode/ensembl-otter.git] (MAIN branch only, and any other Git pushes).
 
-Still necessary,
-* Find and remove CVS keywords - ''jh13 has done most of these?''
-* Find and remove explicit references to CVS
-** Mostly in POD + comments
-** Also in install/make_dist scripts.
-* Create/update deployment scripts.
-* Permissions/other arrangements for other teams to push.
-** External use?
+By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have a clean slate for the future but retain access to old versions.  By keeping CVS history and the Git future in separate repositories, we keep the branch list short and initial history is clear of cvs2git fixups and strange merges.
+
+* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+** We avoided git-cvsimport because it '''drops branches it does not understand''', such as humpub-branch-52.
+** [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer.
+** mca didn't try [http://progetti.arstecnica.it/tailor/wiki tailor].
+* Other preparations and fixes we made,
+** Remove dependence on keyword expansion, ''e.g.'' <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> and similar tricks.
+** Fix -kb and executable flags.
+** Find unlabelled branches and restore their branch tags.  Usually this is caused by attempting to move a branch with <tt>cvs tag -F -B -b</tt> and it cannot be done right.  These can be fixed with <tt>cvs rtag</tt> but it is fiddly.
+** In some cases, apply pre-import patches to the ,v files to resolve two-commits-in-one-second ordering issues or fix up lost deltatext.
+
+==== Actions ====
+# Place a "we have moved to ..." file <tt>MOVED.txt</tt> in several of the top-level directories.  Leave other files untouched, to assist evacuation efforts with <tt>cvs up; cvs diff</tt> .
+# Make the old CVS module read-only for everyone.  [[SIRT:207328]].
+# Create/update deployment scripts - currently manual.
+# Find and remove CVS keywords
+# Find and remove explicit references to CVS
+#* Mostly in POD + comments
+#* Also in install/make_dist scripts.
 
 === Mapping of CVS modules to git repos ===
 For <tt>ensembl-otter</tt> we import the entire module as on Git repository, and it makes sense this way.
 
-Something mca thinks is necessary for <tt>anacode</tt>, but hasn't yet shown an example.
+mca thinks the <tt>anacode</tt> may need breaking into pieces, but hasn't yet shown an example.
 
-<tt>ensembl-otter</tt> can come across in once in one chunk which is much simpler.
-
-=== Mapping of CVS version numbers, per file, to Git commit ids ===
-We'll disable keyword expansion, so it may be necessary to record this mapping elsewhere (e.g. separate file per git repo).
-YAGNI?  But can we get it back later?
-
-=== CVS fixups ===
-jh13 has done some,
-* Removing dependence on keyword expansion, by removing <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> type tricks.
-* Fixing -kb and executable flags.
-
-Pending issues,
-* Beware CRLF conversion, it's [http://thread.gmane.org/gmane.comp.version-control.git/110152 messy].
-*: ''But should be easy on Un*x, right...?''
-* Eventually, place a "we have moved to ..." file and make the rest of the old CVS module read-only for everyone.  [[SIRT:207328]].
+=== Trac integration ===
+* Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
+* [[SIRT:187199]] says wait on [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563391 BTS 563391].  mca is subscribed.
+* ''I made an experimental fetch of multiple repositories' code into the one Trac-watched Git repository, under different namespaces.  This works but doesn't look especially useful. -- [[User:Mca|Mca]] 12:59, 31 May 2011 (UTC)''
 
 == Deployment + Debugging ==
 
