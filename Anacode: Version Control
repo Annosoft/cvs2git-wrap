@@ -56,6 +56,12 @@ You can get an <tt>ensembl-otter</tt> checkout like this
  
  # see it
  gitk --all &
+ 
+ # update it (latest development)
+ git pull
+
+Beyond this, you need to know our current [[#Workflow practices]] to find out which branch you want.
+Please contact the team to find out more about the release process.
 
 === Sending changes back to Anacode ===
 Git allows decentralised development - after taking your clone (above) you are free to commit to it,
