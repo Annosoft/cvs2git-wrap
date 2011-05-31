@@ -10,7 +10,10 @@ In the [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/?root=ensembl E
 ;ensembl-analysis: Modules used by analysis pipeline to do the actual work (blast searches etc...)
 ;ensembl-otter: Our core modules which extend Ensembl and deal with saving gene annotations plus Perl/Tk GUI components
 :''But see [[#Migration to Git]]''
+: In the past, we have moved tags on this module.  <tt>humpub-branch-52</tt> and <tt>humpub-release-52</tt> are particularly affected by this.
 ;ensembl-ace: Modules for transforming ensembl analysis pipeline data into acedb format
+
+We have only sftp/scp access to these files.  This makes it possible to make exports, but not efficient to do repeat imports.  It is also possible to do direct surgery to ,v files - as ever this requires extreme caution.
 
 === Only accessible on the Sanger network ===
 On the [http://intcvs1.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=anacode internal CVS server],
@@ -22,24 +25,15 @@ On the [http://intcvs1.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=anacode in
 ;humscripts: Mostly legacy scripts used in the humpub account
 ;utils: A few useful scripts mostly written by James eg: new_module for creating a new Perl module
 
-== CVS usage notes ==
-* <code>ensembl-*</code> repositories are stored on <code>cvs.sanger.ac.uk</code> under <code>/cvsroot/ensembl</code>, but we do not have ssh access to this server and so have to use sftp. You can still do useful things like <code>chmod</code> on scripts, but the filenames seem to have <code>,v</code> appended to them, just use this in the command, e.g.:
-<pre>
-chmod 555 /cvsroot/ensembl/ensembl-otter/scripts/apache/nph-get_accession_types,v
-</pre>
-* Other repositories (e.g. for <code>PerlModules</code> and <code>humscripts</code>) are stored on <code>cvs.internal.sanger.ac.uk</code> under <code>/repos/cvs/anacode</code> and we do have ssh access to this machine.
-* To get cvs to update new directories as well as files try <code>cvs update -d</code>
-* To revert a file (i.e. trash all local changes) to the latest version from the repo try <code>cvs update -C <filename></code>, the locally modified file is saved to <code>.#<filename>.<version></code>
+We have direct ssh access to these files.
+
+In the past, we have moved tags on this repository.  <tt>humpub-branch-52</tt> and <tt>humpub-release-52</tt> are particularly affected by this.
 
 === CVS tags ===
 
 The Ensembl code has its own branching and tagging structure, documented elsewhere.  Anacode uses an Ensembl release and avoids making changes to it.
 
-For each release of the otterlace system, the same tag is used in all of the CVS modules used in otterlace from the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN</tt>, where NN is the version number incorporated into the URL for the server scripts. (At this point a new dev_otterlace is made for continuing development, with a new version number.) Minor fixes to the new test/production release code are tagged using:
-
-<pre>cvs tag -F humpub-release-NN</pre>
-
-followed by CVS updating the changed CVS modules in <tt>/software/anacode/otter/otter_relNN</tt>.
+For each release of the otterlace system, the same tag is used in all of the CVS modules used in otterlace from the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN-MM</tt>, where NN is the version number incorporated into the URL for the server scripts. (At this point a new dev_otterlace is made for continuing development, with a new version number.) Minor fixes to the new test/production release code are tagged with an incremented ''MM'' component and checked out separately to <tt>/software/anacode/otter/otter_relNN.MM</tt>.
 
 == Migration to Git ==
 We are migrating team-owned code from CVS to Git.
