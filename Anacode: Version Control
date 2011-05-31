@@ -2,17 +2,18 @@
 
 == CVS modules ==
 === Publicly visible ===
-
+In the [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/?root=ensembl Ensembl CVS server],
  cvs -d :ext:cvs.sanger.ac.uk:/cvsroot/ensembl checkout
 
 ;ensembl: Core ensembl API
 ;ensembl-pipeline: Core ensembl analysis pipeline
 ;ensembl-analysis: Modules used by analysis pipeline to do the actual work (blast searches etc...)
 ;ensembl-otter: Our core modules which extend Ensembl and deal with saving gene annotations plus Perl/Tk GUI components
+:''But see [[#Migration to Git]]''
 ;ensembl-ace: Modules for transforming ensembl analysis pipeline data into acedb format
 
 === Only accessible on the Sanger network ===
-
+On the [http://intcvs1.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=anacode internal CVS server],
  cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout
 
 ;PerlModules: Data objects used by the Perl/Tk GUI, plus Sanger specific modules for tasks such as EMBL sequence submissions
@@ -20,26 +21,6 @@
 ;chromoview: Visualisation and assembly of chromosomes from overlapping BACs (TPFs to AGPs)
 ;humscripts: Mostly legacy scripts used in the humpub account
 ;utils: A few useful scripts mostly written by James eg: new_module for creating a new Perl module
-
-=== (tmp section / another incomplete view of the same) ===
-
-{| border=1
-! Obtain !! Contains !! Web?
-|-
-|
- cvs -d :ext:cvs.internal.sanger.ac.uk:/repos/cvs/anacode checkout . -d cvswork-anacode
-| team projects...
-| [http://intcvs1.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=anacode]
-|-
-|
-| The EnsEMBL project (all of it)
-| [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/?root=ensembl]
-|-
-| 
- git clone intcvs1:/repos/git/anacode/trac.git
-| The repository followed by Anacode Trac; currently empty.
-|}
-
 
 == CVS usage notes ==
 * <code>ensembl-*</code> repositories are stored on <code>cvs.sanger.ac.uk</code> under <code>/cvsroot/ensembl</code>, but we do not have ssh access to this server and so have to use sftp. You can still do useful things like <code>chmod</code> on scripts, but the filenames seem to have <code>,v</code> appended to them, just use this in the command, e.g.:
