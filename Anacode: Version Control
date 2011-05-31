@@ -95,6 +95,9 @@ Pending issues,
 * Eventually, place a "we have moved to ..." file and make the rest of the old CVS module read-only for everyone.  [[SIRT:207328]].
 
 == Deployment + Debugging ==
+
+'''This section is out of date, with respect to [[Running a local Otterlace server]].'''
+
 Many scripts are (?) intended to be run from the developer's checkout, using the prevailing PERL5LIB.
 
 === Otterlace client + server ===
