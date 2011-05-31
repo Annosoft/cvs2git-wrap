@@ -66,13 +66,17 @@ If you have commits in your own clone which you would like merged to our reposit
 Members of the <tt>anacode</tt> group have <tt>git push</tt> access to update the central copy.
 Please speak to the team if you need to use this.
 
+We have no immediate plans to push our Git repositories to an external service, but would follow the
+[[The internal CVS / Subversion server#How can I collaborate with people externally?|Systems guidelines]].
+Compare [https://github.com/sanger] [https://github.com/VertebrateResequencing/vr-codebase/network].
+
+=== Workflow practices ===
 For other projects we have used ad-hoc commits to master and merges from feature branches.
 We will trial the use of [http://nvie.com/posts/a-successful-git-branching-model/ <tt>git flow</tt>]
 for management of feature branches.
 
-We have no immediate plans to push our Git repositories to an external service, but would follow the
-[[The internal CVS / Subversion server#How can I collaborate with people externally?|Systems guidelines]].
-Compare [https://github.com/sanger] [https://github.com/VertebrateResequencing/vr-codebase/network].
+In imported code, most of the recent release tags are separated from the <tt>master</tt> branch by cvs2svn fixup commits.  This prevents <tt>git describe</tt> working.
+Future tags will be placed to allow a meaningful version number to be extracted automatically.
 
 === Import process ===
 Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
