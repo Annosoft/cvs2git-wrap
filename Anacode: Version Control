@@ -61,46 +61,46 @@ For each release of the otterlace system, the same tag is used in all of the CVS
 followed by CVS updating the changed CVS modules in <tt>/software/anacode/otter/otter_relNN</tt>.
 
 == Migration to Git ==
-We are hoping to migrate team-owned code from CVS to Git.
+We are migrating team-owned code from CVS to Git.
 
-=== Gentle start with small new projects ===
-A handful of small projects have popped up, see [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi Gitweb].
+You can get an <tt>ensembl-otter</tt> checkout like this
+  git clone intcvs1:/repos/git/anacode/ensembl-otter.git
+
+All our projects are visible under [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi Gitweb].
+
+The <tt>anacode</tt> import is not yet ready for production use.
 
 Once you are familiar with Git, you might try [http://kitenet.net/~joey/code/mr/ mr] to manage checkouts.  See [[Team tools]]<tt>/env/mrconfig</tt> for experimental config.
 
 === Trac integration ===
 * Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
 * [[SIRT:187199]] says wait on [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563391 BTS 563391].  mca is subscribed.
+* Made an experimental fetch of multiple repositories' code into the one Trac-watched Git repository, under different namespaces.  This works but doesn't look especially useful. [[User:Mca|Mca]] 12:59, 31 May 2011 (UTC)
 
-=== Other people involved ===
-We haven't discussed it outside the team much, yet.
-* zmap
-* vega
+=== Import process ===
+Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
 
-=== Possible tools: using cvs2git ===
-As listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+** We avoided git-cvsimport because it '''drops branches it does not understand''', such as humpub-branch-52.
+** [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer.
+** mca didn't try [http://progetti.arstecnica.it/tailor/wiki tailor].
 
-==== git-cvsimport (uses cvsps) ====
-* Consider using [http://www.cobite.com/cvsps/ 2.2b1] (not in Debian yet) because it [http://thread.gmane.org/gmane.comp.version-control.git/78674 fixes some bugs]
-* Allows incremental imports
-* mca has used this (but not for real) and seen some of its limitations.  In particular it '''drops branches it does not understand''', such as humpub-branch-52.
+Output is pushed to
+[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] (all CVS tags and branches, no other Git pushes) and to
+[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/ensembl-otter.git anacode/ensembl-otter.git] (MAIN branch only, and any other Git pushes).
 
-==== cvs2svn + git-svn ====
-* Two-step conversion is doubly tedious.
-* mca has used both steps for [[BSVN:20191|production work]].
-
-==== cvs2git ====
-* "Does a better job".  ''says who? I forget.''
-* "scp -rp" can get hold of the ,v files from the ensembl repo.
-* http://cvs2svn.tigris.org/cvs2git.html and http://cvs2svn.tigris.org/features.html
-* Based on cvs2svn code.
-* It is one-shot, but [http://www.oak.homeunix.org/~marcel/blog/2009/06/03/tracking-cvs-with-git-using-cvs2git can be made incremental].
-** mca likes the sounds of this approach.
-
-==== Tailor ====
-* http://progetti.arstecnica.it/tailor/wiki
+Still necessary,
+* Find and remove CVS keywords - ''jh13 has done most of these?''
+* Find and remove explicit references to CVS
+** Mostly in POD + comments
+** Also in install/make_dist scripts.
+* Create/update deployment scripts.
+* Permissions/other arrangements for other teams to push.
+** External use?
 
 === Mapping of CVS modules to git repos ===
+For <tt>ensembl-otter</tt> we import the entire module as on Git repository, and it makes sense this way.
+
 Something mca thinks is necessary for <tt>anacode</tt>, but hasn't yet shown an example.
 
 <tt>ensembl-otter</tt> can come across in once in one chunk which is much simpler.
@@ -108,25 +108,6 @@ Something mca thinks is necessary for <tt>anacode</tt>, but hasn't yet shown an 
 === Mapping of CVS version numbers, per file, to Git commit ids ===
 We'll disable keyword expansion, so it may be necessary to record this mapping elsewhere (e.g. separate file per git repo).
 YAGNI?  But can we get it back later?
-
-=== Wrapper script to do it ===
-mca has a wrapper script which works OK on the ensembl-otter module.
-* Makes a local copy of Ensembl ,v files
-* Runs the import
-* Prepends an initial empty commit
-* Runs a diff against CVS checkout for every tag and the tip of each branch
-
-Sample output pushed to [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] produced by [[Team tools]]/git-importing/ .
-
-Still necessary,
-* Move CVS branches and/or tags down a namespace level?
-** To clear the boards for a fresh namespace in Git
-** To keep a clear record of what came from CVS
-** To allow a two-clone split for "what was in CVS" and "The Future".  One might obtain the union of these refs by fetching from both repos.
-* Find and remove CVS keywords
-* Find and remove explicit references to CVS
-** Mostly in POD + comments
-** Also in install/make_dist scripts.
 
 === CVS fixups ===
 jh13 has done some,
