@@ -78,6 +78,8 @@ Compare [https://github.com/sanger] [https://github.com/VertebrateResequencing/v
 
 === Workflow practices ===
 For other projects we have used ad-hoc commits to master and merges from feature branches.
+
+There is a proposal for [[A Minimal Git Workflow]].
 We will trial the use of [http://nvie.com/posts/a-successful-git-branching-model/ <tt>git flow</tt>]
 for management of feature branches.
 
