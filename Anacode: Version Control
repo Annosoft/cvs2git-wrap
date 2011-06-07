@@ -81,8 +81,8 @@ For other projects we have used ad-hoc commits to master and merges from feature
 We will trial the use of [http://nvie.com/posts/a-successful-git-branching-model/ <tt>git flow</tt>]
 for management of feature branches.
 
-In imported code, most of the recent release tags are separated from the <tt>master</tt> branch by cvs2svn fixup commits.  This prevents <tt>git describe</tt> working.
-Future tags will be placed to allow a meaningful version number to be extracted automatically.
+In imported code, most of the recent release tags are separated from the <tt>master</tt> branch by cvs2svn fixup commits.  This prevents <tt>git describe</tt> from providing useful results.
+In future tags will be placed to allow a meaningful version number to be extracted automatically.
 
 === Import process ===
 Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
