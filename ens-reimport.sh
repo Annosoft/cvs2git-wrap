@@ -15,17 +15,23 @@ GIDIR=$(
 )
 export PATH=$GIDIR:$PATH
 
+PROJ=$1
+if [ -z "$PROJ" ]; then
+    echo "Syntax: $0 <proj>"
+    exit 1
+fi >&2
+
 # Guard against cronjob stack-up or headbanging failure
-if [ -d /dev/shm/otter.* ]; then
+if [ -d /dev/shm/$PROJ.* ]; then
     echo -e "Still running?\n"
-    ls -lart /dev/shm/otter.*
-    tail -v -n10 /dev/shm/otter.*/import.*.log
+    ls -lart /dev/shm/$PROJ.*
+    tail -v -n10 /dev/shm/$PROJ.*/import.*.log
     exit 7
 fi
 
 # Make a sub-tmp directory.  Let the team hack with it.
 umask 02
-export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t otter.XXXXXX )
+export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t $PROJ.XXXXXX )
 chgrp anacode $TMPDIR
 chmod g+ws,a+rx $TMPDIR
 
@@ -37,11 +43,11 @@ do_import() {
     DISPLAY=
 
 #   List generated manually with
-# (cd ~/gitwk-anacode/ensembl-otter; git fetch; git show-ref | grep -E ' refs/(tags|remotes/[^/]+)/cvs/') > git-importing/otter-reimport.known-good.txt
+# (cd ~/gitwk-anacode/ensembl-$PROJ; git fetch; git show-ref | grep -E ' refs/(tags|remotes/[^/]+)/cvs/') > git-importing/$PROJ-reimport.known-good.txt
 
-    KNOWN_GOOD_CILIST=$GIDIR/otter-reimport.known-good.txt \
+    KNOWN_GOOD_CILIST=$GIDIR/$PROJ-reimport.known-good.txt \
 	ionice -n7 nice ~/bin/rederr \
-	$GIDIR/cvs2git-ensembl-foo otter > $IMPLOG
+	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG
 }
 
 if do_import; then
@@ -53,11 +59,11 @@ else
     exit 8
 fi
 
-cd $TMPDIR/cvs2git-ensembl-otter.*/git
+cd $TMPDIR/cvs2git-ensembl-$PROJ.*/git
 
 # Reject unexpected diffs
-rm -f $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
-DIFFLIST=$( find $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/ -type f -size +0 -ls )
+[ "$PROJ" = 'otter' ] && rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
+DIFFLIST=$( find $TMPDIR/cvs2git-ensembl-$PROJ.*/checkrevs/ -type f -size +0 -ls )
 if [ -z "$DIFFLIST" ]; then
     :
     # looks ok
@@ -68,12 +74,15 @@ else
 fi
 
 
+[ "$PROJ" = 'otter' ] && HAS_NOCVS=1
+
+
 # Align with central repos
-git remote add origin intcvs1:/repos/git/anacode/cvs/ensembl-otter.git
+git remote add origin intcvs1:/repos/git/anacode/cvs/ensembl-$PROJ.git
 git checkout -q cvs/main
 git branch -D master > /dev/null 
 
-git remote add nocvs intcvs1:/repos/git/anacode/ensembl-otter.git
+[ -n "$HAS_NOCVS" ] && git remote add nocvs intcvs1:/repos/git/anacode/ensembl-$PROJ.git
 
 
 # Push and cleanup is optional.  The crontab does this but it is
@@ -82,18 +91,22 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     # Send up the tracking refs
     git push -q origin --tags
     git push -q origin --all
-    git push -q nocvs cvs/main:cvs_MAIN
+    [ -n "$HAS_NOCVS" ] && git push -q nocvs cvs/main:cvs_MAIN
 
     # Move nocvs/master along...  could fail if somebody pushed to it.
     # We will mostly just be interested to hear about this, but then
     # also "somebody" needs to do a rebase or periodic merges from
     # cvs_MAIN.
-    if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
-	echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
-    fi
+## NIH!  cvs/MAIN now contains the "we have moved" files
+#    if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
+#	echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
+#    fi
 
     cd /
     rm -rf $TMPDIR
 else
-    echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes"
+    echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes: dry-run follows"
+    git push -n origin --tags
+    git push -n origin --all
+    [ -n "$HAS_NOCVS" ] && git push -n nocvs cvs/main:cvs_MAIN
 fi
