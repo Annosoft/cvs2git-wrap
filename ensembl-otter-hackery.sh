@@ -19,6 +19,10 @@ fi
 
 cd $REPO
 
+# It is now read-only over there
+chmod -R u+w ensembl-otter
+
 # Nudge this commit late one second, to stabilise the order of
 # renaming
+
 perl -i -pe 'BEGIN { print "Operate on @ARGV :"; $ch=0} $ch++ if s{(2001\.01\.31\.13\.25)\.17}{$1.18}; END { print " Changed $ch lines\n"; $? = ( $ch == 1 ? 0 : 5) }' ensembl-otter/tk/lace/Attic/c20review,v
