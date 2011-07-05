@@ -72,9 +72,8 @@ If you have commits in your own clone which you would like merged to our reposit
 Members of the <tt>anacode</tt> group have <tt>git push</tt> access to update the central copy.
 Please speak to the team if you need to use this.
 
-We have no immediate plans to push our Git repositories to an external service, but would follow the
+This repository [https://github.com/Anacode/ensembl-otter published with Github], following the
 [[The internal CVS / Subversion server#How can I collaborate with people externally?|Systems guidelines]].
-Compare [https://github.com/sanger] [https://github.com/VertebrateResequencing/vr-codebase/network].
 
 === Workflow practices ===
 For other projects we have used ad-hoc commits to master and merges from feature branches.
