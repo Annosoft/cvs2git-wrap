@@ -35,6 +35,39 @@ The Ensembl code has its own branching and tagging structure, documented elsewhe
 
 For each release of the otterlace system, the same tag is used in all of the CVS modules used in otterlace from the two repositories listed above. When a release is ready to be tested (ie: going from dev_otterlace to test_otterlace), it is tagged with <tt>humpub-release-NN-MM</tt>, where NN is the version number incorporated into the URL for the server scripts. (At this point a new dev_otterlace is made for continuing development, with a new version number.) Minor fixes to the new test/production release code are tagged with an incremented ''MM'' component and checked out separately to <tt>/software/anacode/otter/otter_relNN.MM</tt>.
 
+== Git repositories ==
+There are some fresh- and forked- project Git repositories, and some cvs2git imports (see below).
+All are visible in [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacode the <tt>/repos/git/anacode/</tt> namespace] of the internal Git server.
+
+=== Copies where? ===
+; "the server": Everything of significance ''should'' be on <tt>git.internal.sanger.ac.uk</tt> ''aka.'' <tt>intcvs1</tt> .
+: This is our centralised point of exchange, and the repository most often named <tt>origin</tt> .
+; Github: Some projects are also pushed to [https://github.com/Anacode/ the "Anacode" organisation] on github.com
+:* cron2rss was forked from Github.
+:* As of 2011-08 only release branches of ensembl-otter are [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;f=cron/github-pushes;hb=HEAD published] automatically, at 06:06 every day by mca@deskpro17119.
+:* To become a member of Anacode on Github, you must create a personal account and be invited by an existing member.  These are all zero-price acounts.  Github does not support the notion of an organisation ''doing'' anything, including pushing - all actions are taken by members of the organisation.
+; Developers: have zero or more checkouts of any of these, as necessary.  We usually don't fetch from or push to each others working copies.
+; Installations and downloads: Our current build methods usually export, rather than leaving the <tt>.git/</tt> in the built copy.
+
+=== [[wikipedia:Gumbys|Gumby]] repair: unpushing ===
+In Git, any commit may be rebased, amended or otherwise munged.  But after it has been "pushed" to a place where other people/scripts might pull it, doing this can cause chaos and confusion.
+
+; Push the replacement (to a new branch name) as soon as possible: so everyone can see and discuss it.  This is a safe, reversible operation.  Rewinding the Gumbied branch can be done after discussion.
+; Talk to other repository fetchers before backtracking a branch:
+:* Unless they are away, and waiting might make the chaos worse?
+:* Beware some fetchers may have work branched from after the mistake, and may need help rescuing it.
+:* Recommend the use of <tt>git fetch</tt> over <tt>git pull</tt> .  Merging is not going to help.
+; The git tools do not make it easy:
+:* The Git documentation recommends against it.
+:* The central repositories have the default "shared" configuration, which forbids non-fast-forward pushes.
+:* You can push a deletion of the branch, and then replace it with a rewind.  Except for master (or other default/checked out branch), where you must get on the server and rename or reset the master.
+; Clean up ASAP: It is helpful if everyone picks up the new commit, forgets the old one, and rebases pending work where necessary, as soon as possible.
+; Do not move tags:  It's too confusing, just use the next one in the sequence.
+:* Deleting the old one is then easier.  It is just a bad tag which should be forgotten.
+:* git-fetch(1) will not move tags, unless told to with <tt>--tags</tt>.
+; Recognised good reasons to do it:
+:* accidentally committing data-destroying or OS-crashing code, including uncontrolled recursion.  Rationale: they make use of git-bisect(1) less useful.
+
 == Migration to Git ==
 We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt>.
 This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
