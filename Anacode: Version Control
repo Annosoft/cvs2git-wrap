@@ -49,6 +49,7 @@ All are visible in [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacod
 ; Developers: have zero or more checkouts of any of these, as necessary.  We usually don't fetch from or push to each others working copies.
 ; Installations and downloads: Our current build methods usually export, rather than leaving the <tt>.git/</tt> in the built copy.
 
+=== Recovery: restoring a delete branch ===
 === [[wikipedia:Gumbys|Gumby]] repair: unpushing ===
 In Git, any commit may be rebased, amended or otherwise munged.  But after it has been "pushed" to a place where other people/scripts might pull it, doing this can cause chaos and confusion.
 
