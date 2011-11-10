@@ -56,7 +56,7 @@ Note that "git branch -d" enthusiastically removes the reflog also!
 Known options
 * Fetch it back from somewhere.
 * Scroll the terminal back up and find "<tt>Deleted branch foo (was 2d76e6c)</tt>".
-* Raid the snapshot at <tt>~/../.snapshot/hourly.0/$USER/<tt> (but beware it may not have your last hour's work).
+* Raid the snapshot at <tt>~/../.snapshot/hourly.0/$USER/</tt> (but beware it may not have your last hour's work).
 * Use <tt>gitk</tt> to see all commits not yet garbage-collected.
 ** The plan is to find the superset of existing commits not reachable from HEAD, everything visited in any reflog, and the log of HEAD. It can make a rather busy tree.
 ** Configure <tt>gitk</tt> to do this by inserting the following before the last "<tt>}</tt>" in <tt>~/.gitk</tt>&nbsp;. This appears on the View menu.  Refresh it with ctrl-f5.
