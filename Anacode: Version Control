@@ -50,6 +50,18 @@ All are visible in [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacod
 ; Installations and downloads: Our current build methods usually export, rather than leaving the <tt>.git/</tt> in the built copy.
 
 === Recovery: restoring a delete branch ===
+What can you do if you delete a branch and then decide you want it back?
+Note that "git branch -d" enthusiastically removes the reflog also!
+
+Known options
+* Fetch it back from somewhere.
+* Scroll the terminal back up and find "<tt>Deleted branch foo (was 2d76e6c)</tt>".
+* Raid the snapshot (but beware it may not have your last hour's work).
+* Use <tt>gitk</tt> to see all commits not yet garbage-collected.
+** The plan is to find the superset of existing commits not reachable from HEAD, everything visited in any reflog, and the log of HEAD. It can make a rather busy tree.
+** Configure <tt>gitk</tt> to do this by inserting the following before the last "<tt>}</tt>" in <tt>~/.gitk</tt>&nbsp;. This appears on the View menu.  Refresh it with ctrl-f5.
+  set permviews {{Lost {} --all {git fsck --full --unreachable HEAD | cut -d' ' -f3; git log -g --abbrev-commit --pretty=format:%H --all; echo; git log -g --abbrev-commit --pretty=format:%H; echo}}
+
 === [[wikipedia:Gumbys|Gumby]] repair: unpushing ===
 In Git, any commit may be rebased, amended or otherwise munged.  But after it has been "pushed" to a place where other people/scripts might pull it, doing this can cause chaos and confusion.
 
