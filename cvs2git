@@ -2,13 +2,24 @@
 
 # This is a wrapper script to set the install path (I use v2.3.0) and
 # run the program there
+#
+#
+# To get my installed copy, I did something like
+#
+#   svn checkout http://cvs2svn.tigris.org/svn/cvs2svn
+#   # actually it looks like I used "git-svn clone"
+#
+#   cd cvs2svn
+#   ...get on the 2.3.0 release
+#
+#   make install DESTDIR=INST.230.271 PYTHON=/software/bin/python-2.7.1
 
-CVS2SVN_INST="$HOME/gitwk-ext/cvs2svn/INST.230/software/python-2.5"
+CVS2SVN_INST="$HOME/gitwk-ext/cvs2svn/INST.230.271/software/python-2.7.1"
 if [ ! -d $CVS2SVN_INST ]; then
-    echo -e "cvs2svn: install expected in\n  $CVS2SVN_INST\n but not found.  mca had an install of this 2010-11 to 2011-03" >&2
+    echo -e "cvs2svn: install expected in\n  $CVS2SVN_INST\n but not found.  mca had an install of this 2010-11 to 2012-02" >&2
     exit 1
 fi
 
-export PYTHONPATH="$CVS2SVN_INST/lib/python2.5/site-packages"
+export PYTHONPATH="$CVS2SVN_INST/lib/python2.7/site-packages"
 
 exec $CVS2SVN_INST/bin/cvs2git $*
