@@ -21,7 +21,8 @@ cd $REPO
 
 if [ "$SUBPROJ" = 'dbchk' ]; then
     # special case for these files
-    mv humscripts/write_mysql_db_report.pl,v .
+    mv  humscripts/Attic/write_mysql_db_report.pl,v . \
+        || mv humscripts/write_mysql_db_report.pl,v .
     rm -rf PerlModules TODO ace_skeleton address cdna_db chr_tools chromoview est_db humscripts local_apache mg13_test submissions syn_plot utils
     mkdir cron
     mv write_mysql_db_report.pl,v cron
