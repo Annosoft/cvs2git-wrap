@@ -7,9 +7,13 @@
 
 
 PROJ=${1:-foo}
+
+# pass on next arg, for the benefit of anacode-hackery.sh
+export SUBPROJ=${2}
+
 IEC_NAME=$PROJ
 
-GIDIR=$(
+export GIDIR=$(
     cd $( dirname $0 )
     echo $PWD
 )
