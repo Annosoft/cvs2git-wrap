@@ -136,6 +136,14 @@ apply_hackery() {
     else
 	echo $HACKFILE absent, no worries
     fi
+
+    if [ -n "$FETCHREPO_INTERACT" ]; then
+        echo "FETCHREPO_INTERACT=$FETCHREPO_INTERACT : please exit shell after munging the repo copy"
+        (cd $REPOCVS; bash -i)
+        echo "...continuing"
+    else
+        echo 'You could set FETCHREPO_INTERACT to break into a shell here'
+    fi
 }
 
 do_import() {
