@@ -81,6 +81,13 @@ In Git, any commit may be rebased, amended or otherwise munged.  But after it ha
 ; Recognised good reasons to do it:
 :* accidentally committing data-destroying or OS-crashing code, including uncontrolled recursion.  Rationale: they make use of git-bisect(1) less useful.
 
+=== Routine rebasing: author branches ===
+As described in [[A Minimal Git Workflow#Variations]], we have "author branches" named like <tt>$USER/$FEATURE</tt> which other members of the team should consider read-only.
+
+These may be rebased freely by the owner (working around the fast-forward-only restriction).
+
+Please consult the branch owner before merging, branching from or pushing to these branches.
+
 == Migration to Git ==
 We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt>.
 This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
