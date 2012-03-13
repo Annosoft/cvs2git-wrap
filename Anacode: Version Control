@@ -44,7 +44,7 @@ All are visible in [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacod
 : This is our centralised point of exchange, and the repository most often named <tt>origin</tt> .
 ; Github: Some projects are also pushed to [https://github.com/Anacode/ the "Anacode" organisation] on github.com
 :* cron2rss was forked from Github.
-:* As of 2011-08 only release branches of ensembl-otter are [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;f=cron/github-pushes;hb=HEAD published] automatically, at 06:06 every day by mca@deskpro17119.
+:* As of 2011-08 only release branches of ensembl-otter are [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;f=cron/github-pushes;hb=HEAD published] automatically, at 06:06 every day by mca@[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=confomatic;hb=HEAD deskpro-mca].
 :* To become a member of Anacode on Github, you must create a personal account and be invited by an existing member.  These are all zero-price acounts.  Github does not support the notion of an organisation ''doing'' anything, including pushing - all actions are taken by members of the organisation.
 ; Developers: have zero or more checkouts of any of these, as necessary.  We usually don't fetch from or push to each others working copies.
 ; Installations and downloads: Our current build methods usually export, rather than leaving the <tt>.git/</tt> in the built copy.
