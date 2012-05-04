@@ -238,3 +238,7 @@ Assuming the source checkout is a git repository,
 ; deploy by git-subtree-branch (mca) : create git checkout containing only the desired files
 :* it's an unusual / custom mechanism
 :* it is possible to hack & commit on the server, then cherry-pick commits back onto the master (text changes track across the rename, but new files don't)
+
+== Articles ==
+This collection of external articles influencing our thoughts on Git usage started long after we migrated our first repository.
+; http://www.martinfowler.com/bliki/FeatureBranch.html : feature branches may discourage refactoring
