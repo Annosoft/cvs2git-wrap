@@ -241,4 +241,5 @@ Assuming the source checkout is a git repository,
 
 == Articles ==
 This collection of external articles influencing our thoughts on Git usage started long after we migrated our first repository.
+; [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] : a strong influence on Anacode's choice of cvs2git
 ; http://www.martinfowler.com/bliki/FeatureBranch.html : feature branches may discourage refactoring
