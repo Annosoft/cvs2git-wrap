@@ -218,12 +218,14 @@ mca thinks the <tt>anacode</tt> may need breaking into pieces, but hasn't yet sh
 * ''I made an experimental fetch of multiple repositories' code into the one Trac-watched Git repository, under different namespaces.  This works but doesn't look especially useful. -- [[User:Mca|Mca]] 12:59, 31 May 2011 (UTC)''
 
 == Deployment + Debugging ==
-
-'''This section is out of date, with respect to [[Running a local Otterlace server]].'''
-
 Many scripts are (?) intended to be run from the developer's checkout, using the prevailing PERL5LIB.
 
 === Otterlace client + server ===
+<div style='margin:2em; border: 3px green solid; padding: 1em'> 
+'''This section is out of date, with respect to [[Running a local Otterlace server]].'''
+Is any of this still relevant? -- [[User:Mca|Mca]] 16:17, 10 May 2012 (UTC)
+ </div>
+
 It should be possible to run both client & server from developer checkouts, but this is not (yet) straightforward.
 
 See [[Otterlace stuff]].
