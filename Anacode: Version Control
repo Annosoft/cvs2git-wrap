@@ -251,7 +251,8 @@ Server side options,
 
 [[Otterlace_stuff#Publishing_config_files|Config files]] are currently not in CVS.  Some of it needs to be independent of the code release cycle.
 
-=== Deploying to web-team servers ===
+=== Deploying to (legacy) web-team servers ===
+<div style='margin:2em; border: 3px green solid; padding: 1em'> This section will be unncesary once the legacy webservers are gone. </div>
 
 This applies to
 * the Otterlace server (the major production item), and some other tools
