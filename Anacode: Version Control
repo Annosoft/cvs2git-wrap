@@ -248,8 +248,9 @@ Server side options,
 :* "CGI" log output needs putting somewhere
 
 === Otterlace configuration ===
-
 [[Otterlace_stuff#Publishing_config_files|Config files]] are currently not in CVS.  Some of it needs to be independent of the code release cycle.
+
+See [[SIRT:226540|Version control Otter data]] and [[SIRT:257525|The species.dat and users.txt configuration files should be independent of the otter client version]].
 
 === Deploying to (legacy) web-team servers ===
 <div style='margin:2em; border: 3px green solid; padding: 1em'> This section will be unncesary once the legacy webservers are gone. </div>
