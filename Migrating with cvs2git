@@ -1,3 +1,38 @@
 [[Category:Anacode]] [[Category:Version Control]]
 
 This page sprouted from [[Anacode: Version Control]] in order to document the process after the fact.
+
+== Successes ==
+* Migration of <tt>ensembl-otter</tt> from {{ecvs|ensembl-otter/}} to {{git|anacode/ensembl-otter}}
+* Imports of other ensembl modules - these are for our internal (read-only) use.  Many have branch structure problems imported from CVS.
+* Some smaller subprojects from Anacode CVS
+
+
+== Migration recipe ==
+# Select an importer to generate a Git repository from your old history.
+#* You could omit this and start with one Git commit containing the most recent state at import time.
+#*: Throwing away history like this, or making it very difficult to access across the VCS type boundary, is likely to make future maintenance difficult.
+#*: It is difficult to patch up the history later.
+# Be clear about what you lose, that CVS provides.  Many of these neat tricks turn out to be not such a good idea in use, anyway.
+#* Ease of mixing multiple projects in one repository.
+#* Ability to compose a set of these subprojects via <tt>CVSROOT/modules</tt>
+#* Some attempt to track where checkouts have been scattered, via <tt>CVSROOT/history</tt>
+#* Easy substitution of keywords in source files
+#* Appending of commit-comment text to affected files via <tt>$Log$</tt>
+#* Ability to quietly rewrite history without making a commit.  Git explicitly supports history rewrite, and explicitly prevents "silent" history rewrite ''aka.'' corruption.
+#* Apparent atomicity of commits between subprojects.
+#*: Older CVS commits were never atomic, but importers can patch them up so they looked like they were.  Newer CVS commits have a commitid field.
+#*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.
+#*: ''Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, but I haven't found them very practical. -- mca''
+# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.
+# Perform a trial import.
+#* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
+#* Check the branches and tags.  There should be 1:1 correspondence, except for MAIN ''vs.'' master.
+# Grow the import process into a script which can perform in a repeatable way.
+#* Import & checking runs may take 30 minutes.  Often this can be reduced later by some caching.
+# While it is still in CVS, start to remove from the codebase any CVS-specific features.
+#* Keyword expansion.
+#* Make one last pass of fixing up execute permissions.
+#*: You can change them (via commit) in Git
+#*: Changing them in CVS (via chmod) will necessitate rebase of all commits after the addition of that file.
+#* Stop using <tt>CVSROOT/modules</tt> .
