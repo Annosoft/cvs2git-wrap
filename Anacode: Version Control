@@ -111,10 +111,10 @@ Please consult the branch owner before merging, branching from or pushing to the
 <div style='margin:2em; border: 3px green solid; padding: 1em'> This section needs revising.  It was written while switch-over was in the future.
 Content of a more historical perspective in [[Migrating with cvs2git]]</div>
 
-We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt>.
+We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt> (done).
 This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
 
-The <tt>anacode</tt> cvs2git import is not yet ready for production use.
+The <tt>anacode</tt> cvs2git import is not yet ready for production use, due to tag surgery not yet fixed in the ''CVS ,v'' files.
 
 There are also imports of other ensembl modules - these are for our internal (read-only) use, and many have problems with the branch structures.
 
