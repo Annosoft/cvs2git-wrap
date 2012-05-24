@@ -108,7 +108,8 @@ Please consult the branch owner before merging, branching from or pushing to the
 ** to prevent push into <tt>cvs/</tt> ref namespaces.  The belong in the {{git|anacode/cvs/ensembl-otter}} historic archive.
 
 == Migration to Git ==
-<div style='margin:2em; border: 3px green solid; padding: 1em'> This section needs revising.  It was written while switch-over was in the future.</div>
+<div style='margin:2em; border: 3px green solid; padding: 1em'> This section needs revising.  It was written while switch-over was in the future.
+Content of a more historical perspective in [[Migrating with cvs2git]]</div>
 
 We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt>.
 This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
