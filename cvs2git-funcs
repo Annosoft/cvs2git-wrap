@@ -32,6 +32,7 @@ fetchrepo() {
     case $PROJ in
 	ensembl*) fetchrepo_ensembl ;;
 	anacode) fetchrepo_intcvs1 ;;
+	acedb) fetchrepo_intcvs1 ;;
 	zmap) fetchrepo_intcvs1 ;;
 	*) echo "Fetch $PROJ from which repository?" >&2
 	    exit 9 ;;
@@ -217,7 +218,10 @@ checktag() {
 	git branch _diff_to_cvs
     fi
     git checkout -q _diff_to_cvs
-    git reset --hard $GITREV
+
+    git reset --hard $GITREV --
+    # trailing -- defends against file or dir with same name as the
+    # revision we want.  This isn't in git-reset(1).
 
     # If we have this commit already, there is no point hammering CVS
     # again to diff it.  Short-circuit to OK.
