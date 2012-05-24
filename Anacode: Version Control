@@ -120,35 +120,6 @@ There are also imports of other ensembl modules - these are for our internal (re
 
 See also [[Using Git]] for some Sanger-specific notes.
 
-=== Migration recipe ===
-# Select an importer to generate a Git repository from your old history.
-#* You could omit this and start with one Git commit containing the most recent state at import time.
-#*: Throwing away history like this, or making it very difficult to access across the VCS type boundary, is likely to make future maintenance difficult.
-#*: It is difficult to patch up the history later.
-# Be clear about what you lose, that CVS provides.  Many of these neat tricks turn out to be not such a good idea in use, anyway.
-#* Ease of mixing multiple projects in one repository.
-#* Ability to compose a set of these subprojects via <tt>CVSROOT/modules</tt>
-#* Some attempt to track where checkouts have been scattered, via <tt>CVSROOT/history</tt>
-#* Easy substitution of keywords in source files
-#* Appending of commit-comment text to affected files via <tt>$Log$</tt>
-#* Ability to quietly rewrite history without making a commit.  Git explicitly supports history rewrite, and explicitly prevents "silent" history rewrite ''aka.'' corruption.
-#* Apparent atomicity of commits between subprojects.
-#*: Older CVS commits were never atomic, but importers can patch them up so they looked like they were.  Newer CVS commits have a commitid field.
-#*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.
-#*: ''Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, but I haven't found them very practical. -- mca''
-# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.
-# Perform a trial import.
-#* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
-#* Check the branches and tags.  There should be 1:1 correspondence, except for MAIN ''vs.'' master.
-# Grow the import process into a script which can perform in a repeatable way.
-#* Import & checking runs may take 30 minutes.  Often this can be reduced later by some caching.
-# While it is still in CVS, start to remove from the codebase any CVS-specific features.
-#* Keyword expansion.
-#* Make one last pass of fixing up execute permissions.
-#*: You can change them (via commit) in Git
-#*: Changing them in CVS (via chmod) will necessitate rebase of all commits after the addition of that file.
-#* Stop using <tt>CVSROOT/modules</tt> .
-
 === Getting <tt>ensembl-otter</tt> ===
 You can get an <tt>ensembl-otter</tt> checkout like this
  git clone intcvs1:/repos/git/anacode/ensembl-otter.git
@@ -188,34 +159,6 @@ for management of feature branches.
 
 In imported code, most of the recent release tags are separated from the <tt>master</tt> branch by cvs2svn fixup commits.  This prevents <tt>git describe</tt> from providing useful results.
 In future tags will be placed to allow a meaningful version number to be extracted automatically.
-
-=== Import process ===
-Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
-
-Output is pushed to
-[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] (all CVS tags and branches, no other Git pushes) and to
-[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/ensembl-otter.git anacode/ensembl-otter.git] (MAIN branch only, and any other Git pushes).
-
-By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have a clean slate for the future but retain access to old versions.  By keeping CVS history and the Git future in separate repositories, we keep the branch list short and initial history is clear of cvs2git fixups and strange merges.
-
-* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
-** We avoided git-cvsimport because it '''drops branches it does not understand''', such as humpub-branch-52.
-** [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer.
-** mca didn't try [http://progetti.arstecnica.it/tailor/wiki tailor].
-* Other preparations and fixes we made,
-** Remove dependence on keyword expansion, ''e.g.'' <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> and similar tricks.
-** Fix -kb and executable flags.
-** Find unlabelled branches and restore their branch tags.  Usually this is caused by attempting to move a branch with <tt>cvs tag -F -B -b</tt> and it cannot be done right.  These can be fixed with <tt>cvs rtag</tt> but it is fiddly.
-** In some cases, apply pre-import patches to the ,v files to resolve two-commits-in-one-second ordering issues or fix up lost deltatext.
-
-==== Actions ====
-# Place a "we have moved to ..." file <tt>MOVED.txt</tt> in several of the top-level directories.  Leave other files untouched, to assist evacuation efforts with <tt>cvs up; cvs diff</tt> .
-# Make the old CVS module read-only for everyone.  [[SIRT:207328]].
-# Create/update deployment scripts - currently manual.
-# Find and remove CVS keywords
-# Find and remove explicit references to CVS
-#* Mostly in POD + comments
-#* Also in install/make_dist scripts.
 
 === Mapping of CVS modules to git repos ===
 For <tt>ensembl-otter</tt> we import the entire module as on Git repository, and it makes sense this way.
