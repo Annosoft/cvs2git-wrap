@@ -8,6 +8,8 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 
 
 == Migration recipe ==
+(incomplete - this is a reconstruction of what we did)
+
 # Select an importer to generate a Git repository from your old history.
 #* You could omit this and start with one Git commit containing the most recent state at import time.
 #*: Throwing away history like this, or making it very difficult to access across the VCS type boundary, is likely to make future maintenance difficult.
@@ -35,6 +37,25 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #*: You can change them (via commit) in Git
 #*: Changing them in CVS (via chmod) will necessitate rebase of all commits after the addition of that file.
 #* Stop using <tt>CVSROOT/modules</tt> .
+# (on working in Git, sending commits to CVS, re-importing, rebasing in Git to subtract out the now-in-CVS)
+# Stability of import - various things may cause Git branches taken off CVS history to need rebasing.
+#* Changes to the import process
+#* Fixes to permissions of CVS files cause
+#* The historic ordering of non-atomic same-second CVS commits, as perceived by the importer.
+#*: This seems to have instabilities, which we removed by making import from a hacked copy of the ,v files.
+# Pick a date to throw the switch.
+#* Ensure all other repository users are following, by whatever means.
+#* Arrange SSG support, if necessary.
+#* Chase down old CVS working copies and commit until clean enough.  Later, commits will be impossible.  Diffs and updates will remain possible but the possible.
+#* Terminate as many CVS branches as possible (if any).
+# Stop the cvs2git importer.
+# Commit a <tt>MOVED.txt</tt> or similar to CVS.
+# Make CVS read-only.
+# (Optional) Separate the "CVS history" from "the future".
+#* Put the complete CVS history in one archive repository, with all branches and tags under a <tt>cvs/</tt> namespace.
+#* Continue working from a <tt>master</tt> branch, plus any other branches carried over, stored in another Git repository.
+#*: You proceed on a relatively clean (long, but linear and uncluttered with tags) Git history.
+#* It is easy to add (fetch) and remove refs to the old CVS history in any Git working copy.
 
 == Old content, to revise ==
 (delivery here triggerd by mg13's imminent IGM talk)
