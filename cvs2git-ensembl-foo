@@ -3,14 +3,12 @@
 # Written using Git 1.7.2.3, may work with older
 #
 # Recommend running like
-#    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo otter
-#
-# or for the core,
-#    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo ensembl
+#    TMPDIR=/dev/shm ./git-importing/cvs2git-ensembl-foo ensembl-otter
 
+PROJ=${1:-ensembl-foo}
+CANONPFX=ENSCOPY-
 
-PROJ=ensembl-${1:-foo}
-[ "$PROJ" = "ensembl-ensembl" ] && PROJ=ensembl
+IEC_NAME=$PROJ
 
 GIDIR=$(
     cd $( dirname $0 )
@@ -22,7 +20,7 @@ export PATH=$GIDIR:$PATH
 source $GIDIR/cvs2git-funcs
 
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
-canon_repocvs ENSCOPY-$( echo $PROJ | tr a-z A-Z )
+canon_repocvs $CANONPFX$( echo $PROJ | tr a-z A-Z )
 subdir_promote
 
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import

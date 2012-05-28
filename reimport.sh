@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Third-level wrapper: do the import again, push to central repo.
-# Makes local assumptions: rederr, otter, intcvs1
+# Makes local assumptions: rederr, push to intcvs1:/repos/git/anacode/...
 #
 # Anacode team members only need to provide: ~/bin/rederr -> ~mca/bin/rederr
 #  or some other wrapper script which sends (stderr, stdout) to stdout.
@@ -42,10 +42,10 @@ do_import() {
     # Assume ~/.ssh/config is correct.  If not, don't pester the X11 user.
     DISPLAY=
 
-#   List generated manually with
-# (cd ~/gitwk-anacode/ensembl-$PROJ; git fetch; git show-ref | grep -E ' refs/(tags|remotes/[^/]+)/cvs/') > git-importing/$PROJ-reimport.known-good.txt
+# List maintained with help from
+#   mk-known-good.sh ... > git-importing/$PROJ.known-good.txt
 
-    KNOWN_GOOD_CILIST=$GIDIR/$PROJ-reimport.known-good.txt \
+    KNOWN_GOOD_CILIST=$GIDIR/$PROJ.known-good.txt \
 	ionice -n7 nice ~/bin/rederr \
 	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG
 }
@@ -61,8 +61,23 @@ fi
 
 cd $TMPDIR/cvs2git-ensembl-$PROJ.*/git
 
+
+# Project-specific config
+case $PROJ in
+    ensembl-otter)
+        HAS_NOCVS=1
+        NO_PUSH_MASTER=1
+        # cvs/MAIN now contains the "we have moved" files
+        rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
+        ;;
+    ensembl | anacode)
+        # These contain unlabeled-* branches
+        GITSFX=--BROKEN
+        ;;
+esac
+
+
 # Reject unexpected diffs
-[ "$PROJ" = 'otter' ] && rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
 DIFFLIST=$( find $TMPDIR/cvs2git-ensembl-$PROJ.*/checkrevs/ -type f -size +0 -ls )
 if [ -z "$DIFFLIST" ]; then
     :
@@ -74,15 +89,12 @@ else
 fi
 
 
-[ "$PROJ" = 'otter' ] && HAS_NOCVS=1
-
-
 # Align with central repos
-git remote add origin intcvs1:/repos/git/anacode/cvs/ensembl-$PROJ.git
+git remote add origin intcvs1:/repos/git/anacode/cvs/$PROJ$GITSFX.git
 git checkout -q cvs/main
-git branch -D master > /dev/null 
+git branch -D master > /dev/null
 
-[ -n "$HAS_NOCVS" ] && git remote add nocvs intcvs1:/repos/git/anacode/ensembl-$PROJ.git
+[ -n "$HAS_NOCVS" ] && git remote add nocvs intcvs1:/repos/git/anacode/$PROJ$GITSFX.git
 
 
 # Push and cleanup is optional.  The crontab does this but it is
@@ -97,12 +109,14 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     # We will mostly just be interested to hear about this, but then
     # also "somebody" needs to do a rebase or periodic merges from
     # cvs_MAIN.
-## NIH!  cvs/MAIN now contains the "we have moved" files
-#    if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
-#	echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
-#    fi
+    if [ -z "$NO_PUSH_MASTER" ]; then
+        if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
+	    echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
+        fi
+    fi
 
     cd /
+    mv -f $IMPLOG ~/_reimport.$PROJ.log
     rm -rf $TMPDIR
 else
     echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes: dry-run follows"

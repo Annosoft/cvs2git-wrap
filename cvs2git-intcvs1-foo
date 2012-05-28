@@ -7,13 +7,14 @@
 
 
 PROJ=${1:-foo}
+CANONPFX=CVSREPO-
 
 # pass on next arg, for the benefit of anacode-hackery.sh
 export SUBPROJ=${2}
 
 IEC_NAME=$PROJ
 
-export GIDIR=$(
+GIDIR=$(
     cd $( dirname $0 )
     echo $PWD
 )
@@ -23,7 +24,7 @@ export PATH=$GIDIR:$PATH
 source $GIDIR/cvs2git-funcs
 
 unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
-canon_repocvs CVSREPO-$( echo $PROJ | tr a-z A-Z )
+canon_repocvs $CANONPFX$( echo $PROJ | tr a-z A-Z )
 subdir_promote
 
 unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import

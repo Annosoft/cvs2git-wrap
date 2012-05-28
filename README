@@ -3,10 +3,10 @@ These scripts are "temporary".
 Some files are historic / vestigial.
 
 
-The ensembl-otter module is imported regularly
+The ensembl-otter module was imported regularly
 via a crontab line for mca@deskpro17119
 
-  9,39 8-18       * * *   PUSH_AND_CLEAN=1 $C2R/add -Q cvs2git  $TT_S/git-importing/otter-reimport.sh
+  9,39 8-18       * * *   PUSH_AND_CLEAN=1 $C2R/add -Q cvs2git  $ANACODE_TEAM_TOOLS/git-importing/reimport.sh ensembl-otter
 
 ("$C2R/add -Q cvs2git" is a cron2rss wrapper)
 
