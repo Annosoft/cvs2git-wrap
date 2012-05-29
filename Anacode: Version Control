@@ -228,6 +228,9 @@ Assuming the source checkout is a git repository,
 :* it is possible to hack & commit on the server, then cherry-pick commits back onto the master (text changes track across the rename, but new files don't)
 
 == Articles ==
+On 29 May 2012, Michael presented a talk about our migration to Git.
+; [https://helix.wtgc.org/system/files/users/wtsi/c/cb13/2012_05_29_m_gray_igm_git.pdf GIT - making a hash of it] ([https://helix.wtgc.org/groups/information/igm-talks IGM Talks])
+
 This collection of external articles influencing our thoughts on Git usage started long after we migrated our first repository.
 ; [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] : a strong influence on Anacode's choice of cvs2git
 ; http://www.martinfowler.com/bliki/FeatureBranch.html : feature branches may discourage refactoring
