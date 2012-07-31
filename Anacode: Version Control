@@ -203,15 +203,38 @@ Server side options,
 :* "CGI" log output needs putting somewhere
 
 === Otterlace configuration ===
-[[Otterlace_stuff#Publishing_config_files|Config files]] for [[Otterlace configuration]] are migrating to Git.
+[[Otterlace_stuff#Publishing_config_files|Config files]] for server-side [[Otterlace configuration]] are migrating to Git.
 
 This is maintained somewhat independently of the code release cycle.
 
-See
 * [[SIRT:226540|Version control Otter data]] (in progress)
-* [[SIRT:257525|The species.dat and users.txt configuration files should be independent of the otter client version]] (done).
+* [[SIRT:257525|The species.dat and users.txt configuration files should be independent of the otter client version]] (done)
+* Note that this repository contains user email addresses, so we would not publish it without some redaction.
 
-Note that this repository contains user email addresses, so we would not publish it without some redaction.
+
+# Clone the repository with <tt>git clone intcvs1:/repos/git/anacode/server-config.git; cd server-config; git checkout 68</tt>
+#* '''Note that it is not yet live - it receives some updates from /nfs/WWWdev/SANGER_docs/data/otter via history generator scripts.'''
+#* Please continue to write to NFS as normal.
+# It will help to have the Anacode [[team_tools]] on your <tt>PATH</tt>, so you can use the <tt>server-config-op update</tt> command to bring all local branches up-to-date.
+# Changes for one version should normally be made to the latest version
+## <tt>server-config-op update</tt>
+## <tt>git checkout 68</tt>
+## edit files
+## <tt>git commit -m "explain what you are doing"</tt>
+## <tt>git push</tt>
+## The push will to regenerate the merged dev branch.
+## More magic is needed, to get this onto the webserver.  It is not yet automatic.
+# Changes for production
+## Need to be cherry-picked onto each maintained version branch.
+## Push (normally all together in one operation) to regenerate the merged dev branch.
+## <tt>git fetch -p</tt>
+## Check the result
+## <tt>git push origin dev:live</tt>
+## More magic will be needed, to <tt>webpublish</tt> this onto the webserver.
+# Creating a new version
+#* Currently needs to be done on intcvs1 (feature is missing)
+
+Common operations are worth automating.  See [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=blob;f=bin/server-config-op;hb=HEAD <tt>server-config-op</tt>]'s POD for more info.
 
 === Deploying to (legacy) web-team servers ===
 <div style='margin:2em; border: 3px green solid; padding: 1em'> This section will be unncesary once the legacy webservers are gone. </div>
