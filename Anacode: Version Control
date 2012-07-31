@@ -210,6 +210,7 @@ This is maintained somewhat independently of the code release cycle.
 * [[SIRT:226540|Version control Otter data]] (in progress)
 * [[SIRT:257525|The species.dat and users.txt configuration files should be independent of the otter client version]] (done)
 * Note that this repository contains user email addresses, so we would not publish it without some redaction.
+* See {{git|anacode/server-config}}
 
 
 # Clone the repository with <tt>git clone intcvs1:/repos/git/anacode/server-config.git; cd server-config; git checkout 68</tt>
