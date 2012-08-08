@@ -103,6 +103,7 @@ When making changes, it is useful to have "all the related code" to hand.  This 
 ; [[AnnoTrack]]:
 :* http://cvs.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/tracking_system/perl/scripts/?root=gencode
 :* http://cvs.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/tracking_system/perl/modules/gencode_tracking_system/?root=gencode
+: Check out with <tt> svn co svn+ssh://intcvs1/repos/svn/gencode/tracking_system/perl tracking_system.perl </tt> and update with <tt> svn up </tt>
 ; [[GRIT]]: may be using some Hum:: modules?
 
 == Code QA measures ==
