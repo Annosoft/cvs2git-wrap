@@ -98,6 +98,13 @@ These may be rebased freely by the owner (working around the fast-forward-only r
 
 Please consult the branch owner before merging, branching from or pushing to these branches.
 
+== Other relevant code ==
+When making changes, it is useful to have "all the related code" to hand.  This section attempts to list other places that have relevant code, in addition to Anacode's own repositories.
+; [[AnnoTrack]]:
+:* http://cvs.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/tracking_system/perl/scripts/?root=gencode
+:* http://cvs.internal.sanger.ac.uk/cgi-bin/viewvc.cgi/tracking_system/perl/modules/gencode_tracking_system/?root=gencode
+; [[GRIT]]: may be using some Hum:: modules?
+
 == Code QA measures ==
 * We have tools to run Perlcritic and "perl -c" on our code
 ** [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=elisp;hb=HEAD emacs linkage]
