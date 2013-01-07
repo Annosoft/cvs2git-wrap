@@ -27,9 +27,9 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.  This can (has in our experience) caused deployment problems.
 #*:* ''e.g.'' a modules and its calling scripts having the meaning of some variable changed, but only one of them being deployed.
 #*: Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, ''but I haven't found them very practical. -- mca''
-# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.  Bear in mind
-#* The issues of breaking atomic commits
-#* Whether it would be meaningful to make a branch or tag covering all sub-projects.  If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
+# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.  See [[#Mapping of CVS modules to git repos]].
+#: When migration of these is underway, you can continue with the remainder: between fetching ,v files and running cvs2git, simply unlink all previously-imported files.
+#: Expect that what you learn during one migration may affect how you prefer to do another.
 # Perform a trial import.
 #* Expect to be doing many of these and start automating things.
 #* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
@@ -120,6 +120,13 @@ Some CVS repositories contain multiple sub-projects.  They may need breaking int
 
 ''I did this for <tt>dbchk/</tt> from <tt>/repos/cvs/anacode</tt> CVS, after extending the importer wrapper, mostly as proof of concept. -- mca''
 
+Bear in mind
+* The issues of breaking atomic commits.
+*: You might prefer to avoid breaking atomic-in-CVS commits across two Git repositories, unless they are only atomic because someone ran <tt>cvs ci -m .</tt> in the top level.
+* Whether it would be meaningful to make a branch or tag covering all sub-projects.
+*: If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
+* At the code dependency level, which project requires the others?
+*: We preferred to reduce circular dependencies.  Some projects are cross-linked like a thermoset polymer.
 
 == Old content, to revise ==
 (delivery here triggerd by mg13's IGM talk 2012-05)
