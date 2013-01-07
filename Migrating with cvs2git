@@ -97,6 +97,17 @@ there will be broken files and branches.
 * It seems to be impossible to move a branch tag correctly with <tt>cvs tag -FB</tt> .  Instead try <tt>cvs rtag</tt> and inspect the results with ViewVC's graphviz generator (<tt>view=graph</tt>).
 * Problems may be fixed directly in the repository, if you have the necessary access and no less confidence than the person who broke it.  Or you can code up a bodge script to run between "get a copy of the ,v files" and "run cvs2git".
 
+== Why <tt>cvs2git</tt>? ==
+* Reading [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] was a strong influence on Anacode's choice of cvs2git. ''I was encouraged by their attention to detail. -- mca''
+* cvs2git is based on cvs2svn, which is maintained alongside CVS itself.  We took the reasonable view that these maintainers understand CVS ,v files (meaning of and problems with) best.
+* For imports on several projects, for every branch and tag, the import wrapper runs a <tt>diff -r</tt> .  Nothing significant has shown up.
+*: There are some corner cases relating to $Keyword$ expansion, possibly during CVS vendor branch setup, which cause minor diffs.  ''I ignored these. -- mca''
+* Where Git commitids have been unstable, there has always been a sane explanation.
+** Non-historic permissions changed manually.
+** Same-second commits being reordered, for no discernible reason.
+
+''After this I saw no need to investigate Tailor and other tools. -- mca''
+
 == CVS merges are broken ==
 Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?) not propagated into Git - the files merely change with no record of why.
 
