@@ -39,6 +39,17 @@ For each release of the otterlace system, the same tag is used in all of the CVS
 There are some fresh- and forked- project Git repositories, and some cvs2git imports (see below).
 All are visible in [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacode the <tt>/repos/git/anacode/</tt> namespace] of the internal Git server.
 
+''e.g.''
+ git clone intcvs1:/repos/git/anacode/ensembl-otter.git
+ cd ensembl-otter
+
+=== Routine rebasing: author branches ===
+As described in [[A Minimal Git Workflow#Variations]], we have "author branches" named like <tt>$USER/$FEATURE</tt> which other members of the team should consider read-only.
+
+These may be rebased freely by the owner (working around the fast-forward-only restriction).
+
+Please consult the branch owner before merging, branching from or pushing to these branches.
+
 === Copies where? ===
 Git is decentralised, so repositories may exist in several places.
 
@@ -90,13 +101,6 @@ In Git, any commit may be rebased, amended or otherwise munged.  But after it ha
 :* git-fetch(1) will not move tags, unless told to with <tt>--tags</tt>.
 ; Recognised good reasons to do it:
 :* accidentally committing data-destroying or OS-crashing code, including uncontrolled recursion.  Rationale: they make use of git-bisect(1) less useful.
-
-=== Routine rebasing: author branches ===
-As described in [[A Minimal Git Workflow#Variations]], we have "author branches" named like <tt>$USER/$FEATURE</tt> which other members of the team should consider read-only.
-
-These may be rebased freely by the owner (working around the fast-forward-only restriction).
-
-Please consult the branch owner before merging, branching from or pushing to these branches.
 
 == Other relevant code ==
 When making changes, it is useful to have "all the related code" to hand.  This section attempts to list other places that have relevant code, in addition to Anacode's own repositories.
