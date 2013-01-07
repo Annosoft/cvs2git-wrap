@@ -113,6 +113,14 @@ Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?)
 
 It is possible to update the Git history to record the additional parents.  The cvs2git wrapper currently does not help with that.  ''I did this for perlunit.sf.net , it is tedious -- mca''
 
+== Mapping of CVS modules to git repos ==
+For ensembl-otter we imported the entire module as one Git repository, and it makes sense this way.
+
+Some CVS repositories contain multiple sub-projects.  They may need breaking into pieces, in a way that they would not if you switched to Subversion.
+
+''I did this for <tt>dbchk/</tt> from <tt>/repos/cvs/anacode</tt> CVS, after extending the importer wrapper, mostly as proof of concept. -- mca''
+
+
 == Old content, to revise ==
 (delivery here triggerd by mg13's IGM talk 2012-05)
 
