@@ -72,9 +72,10 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 # Commit a prominent <tt>MOVED.txt</tt> or similar file to CVS, explaining where development is continuing.
 # Make CVS read-only.
 # (Optional) Separate the "CVS history" from "the future".
-#* Put the complete CVS history in one archive repository,
-#*: with all branches and tags renamed into a <tt>cvs/</tt> namespace, ''e.g.'' <tt>refs/heads/cvs/humpub-branch-52</tt>
-#*: Rename the entire repository down a level and make it read-only.
+#* Leave the complete CVS history in one archive repository,
+#*: with all branches and tags renamed into a <tt>cvs/</tt> namespace, ''e.g.'' <tt>refs/heads/cvs/humpub-branch-52</tt> .  The import wrapper does this for you.
+#*: the entire repository named one level down.  Our import wrapper did this by pushing successful conversions to two places, one containing only master.
+#*: made read-only after a final import run for <tt>MOVED.txt</tt>.
 #* Continue working from a <tt>master</tt> branch, plus any other branches carried over, stored in another Git repository.
 #*: You proceed on a relatively clean (long, but linear and uncluttered with tags) Git history.
 #* It is easy to add (<tt>git fetch ancient<tt>) and remove (<tt>rm -r .git/refs/heads/cvs/</tt> or similar) refs for the old CVS history, in any Git working copy.
