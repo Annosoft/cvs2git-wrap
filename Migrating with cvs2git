@@ -80,6 +80,7 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #*: You proceed on a relatively clean (long, but linear and uncluttered with tags) Git history.
 #* It is easy to add (<tt>git fetch ancient<tt>) and remove (<tt>rm -r .git/refs/heads/cvs/</tt> or similar) refs for the old CVS history, in any Git working copy.
 #* Nothing is lost, but the namespace is nicely clean.
+# Git is now the primary source - migration complete.
 
 == Old content, to revise ==
 (delivery here triggerd by mg13's imminent IGM talk)
