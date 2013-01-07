@@ -21,41 +21,64 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #* Easy substitution of keywords in source files
 #* Appending of commit-comment text to affected files via <tt>$Log$</tt>
 #* Ability to quietly rewrite history without making a commit.  Git explicitly supports history rewrite, and explicitly prevents "silent" history rewrite ''aka.'' corruption.
-#* Apparent atomicity of commits between subprojects.
-#*: Older CVS commits were never atomic, but importers can patch them up so they looked like they were.  Newer CVS commits have a commitid field.
-#*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.
-#*: ''Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, but I haven't found them very practical. -- mca''
-# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.
+#* Apparent atomicity of commits between subprojects (even different repositories?).
+#*: Older CVS commits were never atomic, but importers can patch them up so they looked like they were.  Heuristics are used.
+#*: Newer CVS commits have a commitid field, visible in <tt>cvs log</tt> output.
+#*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.  This can (has in our experience) caused deployment problems.
+#*:* ''e.g.'' a modules and its calling scripts having the meaning of some variable changed, but only one of them being deployed.
+#*: Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, ''but I haven't found them very practical. -- mca''
+# (If the CVS repository contains multiple sub-projects), choose one or two to extract as Git repositories.  Bear in mind
+#* The issues of breaking atomic commits
+#* Whether it would be meaningful to make a branch or tag covering all sub-projects.  If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
 # Perform a trial import.
+#* Expect to be doing many of these and start automating things.
 #* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
 #* Check the branches and tags.  There should be 1:1 correspondence, except for MAIN ''vs.'' master.
 # Grow the import process into a script which can perform in a repeatable way.
-#* Import & checking runs may take 30 minutes.  Often this can be reduced later by some caching.
+#* Put it on a crontab.  Fresh CVS commits should then start appearing in a Git repository automatically.
+#* Full import & checking runs may take 30 minutes.  This may be reduced by some caching.
+# Run with both systems for a while, '''considering CVS to be the master'''.
+#: For early adopters,
+#:# build commits in Git
+#:# squash or otherwise commit them to CVS, being careful to watch the outgoing diffs to avoid accidental reverts.
+#:# wait for the importer to re-run
+#:# <tt>git pull --rebase</tt> or similar, to rebase your un-pushed commits onto the latest CVS.
+#: You should find that your "pushed" Git commits disappear from the rebased branch.  This works almost as well as the <tt>git-svn</tt> workflow.
+#:* beware merges and branches.  ''We stuck to linear -- mca''
+#:* start replacing any CVS-dependent machinery in the project.
+#: For late adopters,
+#:* Ensure you can clone the new repositories.
+#:* Look at the shiny new tools. ''<tt>gitk --all</tt> is my favourite -- mca''
 # While it is still in CVS, start to remove from the codebase any CVS-specific features.
 #* Keyword expansion.
 #* Make one last pass of fixing up execute permissions.
 #*: You can change them (via commit) in Git
-#*: Changing them in CVS (via chmod) will necessitate rebase of all commits after the addition of that file.
+#*: Changing them in CVS (via chmod) will change all subsequent commitids on the next cvs2git run '''after the first appearance of that file'''.  Early adopters must rebase all following branches.
 #* Stop using <tt>CVSROOT/modules</tt> .
-# (on working in Git, sending commits to CVS, re-importing, rebasing in Git to subtract out the now-in-CVS)
 # Stability of import - various things may cause Git branches taken off CVS history to need rebasing.
 #* Changes to the import process
-#* Fixes to permissions of CVS files cause
+#* Changing the nature of the initial commit in the Git repository.
+#* Fixes to permissions of CVS ,v files with chmod.
 #* The historic ordering of non-atomic same-second CVS commits, as perceived by the importer.
 #*: This seems to have instabilities, which we removed by making import from a hacked copy of the ,v files.
 # Pick a date to throw the switch.
 #* Ensure all other repository users are following, by whatever means.
-#* Arrange SSG support, if necessary.
-#* Chase down old CVS working copies and commit until clean enough.  Later, commits will be impossible.  Diffs and updates will remain possible but the possible.
+#* Arrange support from Systems group, if necessary.
+#* Chase down old CVS working copies and commit until "clean enough".
+#*: Later, commits will be impossible.
+#*: Diffs and updates will remain possible until the CVS server goes away.  You may plan to leave it up indefinitely, or keep a tarball of it "just in case".
 #* Terminate as many CVS branches as possible (if any).
-# Stop the cvs2git importer.
-# Commit a <tt>MOVED.txt</tt> or similar to CVS.
+# Stop the cvs2git importer loop.
+# Commit a prominent <tt>MOVED.txt</tt> or similar file to CVS, explaining where development is continuing.
 # Make CVS read-only.
 # (Optional) Separate the "CVS history" from "the future".
-#* Put the complete CVS history in one archive repository, with all branches and tags under a <tt>cvs/</tt> namespace.
+#* Put the complete CVS history in one archive repository,
+#*: with all branches and tags renamed into a <tt>cvs/</tt> namespace, ''e.g.'' <tt>refs/heads/cvs/humpub-branch-52</tt>
+#*: Rename the entire repository down a level and make it read-only.
 #* Continue working from a <tt>master</tt> branch, plus any other branches carried over, stored in another Git repository.
 #*: You proceed on a relatively clean (long, but linear and uncluttered with tags) Git history.
-#* It is easy to add (fetch) and remove refs to the old CVS history in any Git working copy.
+#* It is easy to add (<tt>git fetch ancient<tt>) and remove (<tt>rm -r .git/refs/heads/cvs/</tt> or similar) refs for the old CVS history, in any Git working copy.
+#* Nothing is lost, but the namespace is nicely clean.
 
 == Old content, to revise ==
 (delivery here triggerd by mg13's imminent IGM talk)
