@@ -171,7 +171,8 @@ In future tags will be placed to allow a meaningful version number to be extract
 === Mapping of CVS modules to git repos ===
 For <tt>ensembl-otter</tt> we import the entire module as on Git repository, and it makes sense this way.
 
-mca thinks the <tt>anacode</tt> may need breaking into pieces, but hasn't yet shown an example.
+mca thinks the <tt>anacode</tt> may need breaking into pieces, and did this for <tt>dbchk/</tt> after extending the importer wrapper.
+We also took some steps to decide which files should migrate to <tt>ensembl-otter</tt>.
 
 === Trac integration ===
 * Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
