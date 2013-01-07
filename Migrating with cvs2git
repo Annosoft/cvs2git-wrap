@@ -47,8 +47,9 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #:* beware merges and branches.  ''We stuck to linear -- mca''
 #:* start replacing any CVS-dependent machinery in the project.
 #: For late adopters,
-#:* Ensure you can clone the new repositories.
+#:* Ensure you can clone the new repositories, commit and push.
 #:* Look at the shiny new tools. ''<tt>gitk --all</tt> is my favourite -- mca''
+#: ''We ran in this state for some months. -- mca''
 # While it is still in CVS, start to remove from the codebase any CVS-specific features.
 #* Keyword expansion.
 #* Make one last pass of fixing up execute permissions.
@@ -81,6 +82,7 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #* It is easy to add (<tt>git fetch ancient<tt>) and remove (<tt>rm -r .git/refs/heads/cvs/</tt> or similar) refs for the old CVS history, in any Git working copy.
 #* Nothing is lost, but the namespace is nicely clean.
 # Git is now the primary source - migration complete.
+#* Be prepared to deal with the inevitable mistakes that may be caused by adopting a new tool.  We were pleased that ours were not published to Github, due to a decision to push release branches but not master.
 
 == Old content, to revise ==
 (delivery here triggerd by mg13's imminent IGM talk)
