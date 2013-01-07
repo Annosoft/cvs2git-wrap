@@ -34,6 +34,7 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 #* Expect to be doing many of these and start automating things.
 #* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
 #* Check the branches and tags.  There should be 1:1 correspondence, except for MAIN ''vs.'' master.
+#* Expect to find that your project's [[#CVS history is broken]].
 # Grow the import process into a script which can perform in a repeatable way.
 #* Put it on a crontab.  Fresh CVS commits should then start appearing in a Git repository automatically.
 #* Full import & checking runs may take 30 minutes.  This may be reduced by some caching.
