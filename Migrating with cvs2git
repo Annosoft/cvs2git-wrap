@@ -85,8 +85,25 @@ This page sprouted from [[Anacode: Version Control]] in order to document the pr
 # Git is now the primary source - migration complete.
 #* Be prepared to deal with the inevitable mistakes that may be caused by adopting a new tool.  We were pleased that ours were not published to Github, due to a decision to push release branches but not master.
 
+== CVS history is broken ==
+To start with, you should suspect your CVS history.
+
+Unless you are certain nobody has every moved any tags or taken a text
+editor to any <tt>,v</tt> files, on a ten year old project it is inevitable
+there will be broken files and branches.
+
+''I have some experience patching these up. -- mca''
+
+* It seems to be impossible to move a branch tag correctly with <tt>cvs tag -FB</tt> .  Instead try <tt>cvs rtag</tt> and inspect the results with ViewVC's graphviz generator (<tt>view=graph</tt>).
+* Problems may be fixed directly in the repository, if you have the necessary access and no less confidence than the person who broke it.  Or you can code up a bodge script to run between "get a copy of the ,v files" and "run cvs2git".
+
+== CVS merges are broken ==
+Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?) not propagated into Git - the files merely change with no record of why.
+
+It is possible to update the Git history to record the additional parents.  The cvs2git wrapper currently does not help with that.  ''I did this for perlunit.sf.net , it is tedious -- mca''
+
 == Old content, to revise ==
-(delivery here triggerd by mg13's imminent IGM talk)
+(delivery here triggerd by mg13's IGM talk 2012-05)
 
 === Import process ===
 Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
