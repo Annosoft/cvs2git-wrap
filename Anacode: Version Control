@@ -123,12 +123,14 @@ When making changes, it is useful to have "all the related code" to hand.  This 
 <div style='margin:2em; border: 3px green solid; padding: 1em'> This section needs revising.  It was written while switch-over was in the future.
 Content of a more historical perspective in [[Migrating with cvs2git]]</div>
 
-We are migrating existing team-owned code from CVS to Git, starting with <tt>ensembl-otter</tt> (done).
-This and all our other code is visible under the [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi internal Gitweb] server.
+We are migrating existing team-owned code from CVS to Git.  It is [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacode visible on the internal Gitweb] server.
 
-The <tt>anacode</tt> cvs2git import is not yet ready for production use, due to tag surgery not yet fixed in the ''CVS ,v'' files.
-
-There are also imports of other ensembl modules - these are for our internal (read-only) use, and many have problems with the branch structures.
+;ensembl-otter: We started with <tt>ensembl-otter</tt> ([http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/MOVED.txt?root=ensembl&view=markup done]).
+;anacode: The <tt>anacode</tt> cvs2git import is not yet ready for production use, due to tag surgery not yet fixed in the ''CVS ,v'' files.
+;Other ensembl: There are also imports of other ensembl modules - these are for our internal (read-only) use.
+:* Many have problems with the branch structures.
+:* They are updated infrequently, when we need to.
+:* Ensembl migration to Git is under discussion ([http://lists.ensembl.org/pipermail/dev/2012-September/thread.html#8039 here] and [http://lists.ensembl.org/pipermail/dev/2012-October/thread.html#8105 here]).  [http://lists.ensembl.org/pipermail/dev/2012-October/008111.html Mail Paul] if you need it.
 
 See also [[Using Git]] for some Sanger-specific notes.
 
@@ -171,12 +173,6 @@ for management of feature branches.
 
 In imported code, most of the recent release tags are separated from the <tt>master</tt> branch by cvs2svn fixup commits.  This prevents <tt>git describe</tt> from providing useful results.
 In future tags will be placed to allow a meaningful version number to be extracted automatically.
-
-=== Mapping of CVS modules to git repos ===
-For <tt>ensembl-otter</tt> we import the entire module as on Git repository, and it makes sense this way.
-
-mca thinks the <tt>anacode</tt> may need breaking into pieces, and did this for <tt>dbchk/</tt> after extending the importer wrapper.
-We also took some steps to decide which files should migrate to <tt>ensembl-otter</tt>.
 
 === Trac integration ===
 * Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
