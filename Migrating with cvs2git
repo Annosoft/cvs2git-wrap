@@ -87,6 +87,7 @@ While it is still in CVS, start to remove from the codebase any CVS-specific fea
 * Fix -kb (binary flag) - relevant only for Windows users?  I think Git handles this with smudge filters.
 * Stop using <tt>CVSROOT/modules</tt> .
 * Terminate as many CVS branches as possible (if any).
+* Create or update any deployment scripts.
 
 === Pick a date ===
 Decide when to throw the switch.
@@ -99,7 +100,8 @@ Decide when to throw the switch.
 === Switch ===
 # Stop the cvs2git importer loop
 # Commit a prominent <tt>MOVED.txt</tt> or similar file to CVS, explaining where development is continuing.
-# Make CVS read-only.
+# Make the old CVS modules (directories) read-only.  [[SIRT:207328]].
+#: This will be trickier if you are importing a scattered set of files.  Have the script prepared.
 
 (Optional) Separate the "CVS history" from "the future".
 * Leave the complete CVS history in one archive repository,
@@ -179,9 +181,6 @@ By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have 
 ** In some cases, apply pre-import patches to the ,v files to resolve two-commits-in-one-second ordering issues or fix up lost deltatext.
 
 ==== Actions ====
-# Place a "we have moved to ..." file <tt>MOVED.txt</tt> in several of the top-level directories.  Leave other files untouched, to assist evacuation efforts with <tt>cvs up; cvs diff</tt> .
-# Make the old CVS module read-only for everyone.  [[SIRT:207328]].
-# Create/update deployment scripts - currently manual.
 # Find and remove CVS keywords
 # Find and remove explicit references to CVS
 #* Mostly in POD + comments
