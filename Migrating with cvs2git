@@ -43,7 +43,7 @@ If you have sub-projects, choose one or two to extract as Git repositories.  Bea
 *: We preferred to reduce circular dependencies.  Some projects are cross-linked like a thermoset polymer.
 
 When migration of these is underway, you can continue with the remainder.
-: Between fetching ,v files and running cvs2git, simply unlink all previously-imported files.
+: In the [[#Hackery]] phase, simply unlink all previously-imported files.
 
 === Select an importer ===
 You're here because you want to generate an accurate Git repository from your old history.
@@ -51,6 +51,20 @@ You're here because you want to generate an accurate Git repository from your ol
 You could omit this and start with one Git commit containing the most recent state at import time.
 * Throwing away history like this, or making it very difficult to access across the VCS type boundary, is likely to make future maintenance more difficult.
 * It is difficult to patch up the history later.
+
+=== Why <tt>cvs2git</tt>? ===
+* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+* Reading [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] was a strong influence on Anacode's choice of cvs2git. ''I was encouraged by their attention to detail. -- mca''
+* [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer, which is maintained alongside CVS itself.  We took the reasonable view that these maintainers understand CVS ,v files (meaning of and problems with) best.
+* For imports on several projects, for every branch and tag, the import wrapper runs a <tt>diff -r</tt> .  Nothing significant has shown up.
+*: There are some corner cases relating to $Keyword$ expansion, possibly during CVS vendor branch setup, which cause minor diffs.  ''I ignored these. -- mca''
+* Where Git commitids have been unstable, there has always been a sane explanation.
+** Non-historic permissions changed manually.
+** Same-second commits being reordered, for no discernible reason.  Hash enumeration order?
+
+We avoided <tt>git-cvsimport</tt> because it '''dropped branches it did not understand''', such as humpub-branch-52.
+
+''After this I saw no need to investigate [http://progetti.arstecnica.it/tailor/wiki Tailor] and other tools. -- mca''
 
 === Perform a trial import ===
 * Expect to be doing many of these and start automating things.
@@ -82,11 +96,11 @@ Run with both systems for a while, '''considering CVS to be the master'''.
 
 === Stability of import ===
 Various things may cause Git branches taken off CVS history to need rebasing.
-* Changes to the import process
+* Changes to the import process, including the [[#Hackery]] phase.
 * Changing the nature of the initial commit in the Git repository.
 * Fixes to permissions of CVS ,v files with chmod.
 * The historic ordering of non-atomic same-second CVS commits, as perceived by the importer.
-*: This seems to have instabilities, which we removed by making import from a hacked copy of the ,v files.
+*: This seems to have instabilities, which we removed by bumping one commit on a second during [[#Hackery]].
 
 === Disentangle from CVS ===
 While it is still in CVS, start to remove from the codebase any CVS-specific features.
@@ -140,22 +154,24 @@ there will be broken files and branches.
 
 ''I have some experience patching these up. -- mca''
 
-* It seems to be impossible to move a branch tag correctly with <tt>cvs tag -FB</tt> .  Instead try <tt>cvs rtag</tt> and inspect the results with ViewVC's graphviz generator (<tt>view=graph</tt>).
-* Problems may be fixed directly in the repository, if you have the necessary access and no less confidence than the person who broke it.  Or you can code up a bodge script to run between "get a copy of the ,v files" and "run cvs2git".
+=== Branch tags lost or moved ===
+# Find unlabelled branches.  They will import as numeric branch names like <tt>1.1.2.2</tt>
+# Restore their branch tags.  This will require some sleuthing, local knowledge and/or guesswork.
+#* In many cases the branch tag is still there on another numeric version.
+#* Often it will have no commits on the branch (be grateful).
+#* Otherwise, note that your history is ambiguous.
 
-== Why <tt>cvs2git</tt>? ==
-* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
-* Reading [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] was a strong influence on Anacode's choice of cvs2git. ''I was encouraged by their attention to detail. -- mca''
-* [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer, which is maintained alongside CVS itself.  We took the reasonable view that these maintainers understand CVS ,v files (meaning of and problems with) best.
-* For imports on several projects, for every branch and tag, the import wrapper runs a <tt>diff -r</tt> .  Nothing significant has shown up.
-*: There are some corner cases relating to $Keyword$ expansion, possibly during CVS vendor branch setup, which cause minor diffs.  ''I ignored these. -- mca''
-* Where Git commitids have been unstable, there has always been a sane explanation.
-** Non-historic permissions changed manually.
-** Same-second commits being reordered, for no discernible reason.  Hash enumeration order?
+Also note,
+* Attempting to move a branch with <tt>cvs tag -F -B -b</tt> cannot be done right.
+*: Instead try <tt>cvs rtag</tt> and inspect the results with ViewVC's graphviz generator (<tt>view=graph</tt>).
+* If your CVS admin had the foresight to include a taglog, write and say thanks.
+* Problems may be fixed directly in the repository, if you have the necessary access and no less confidence than the person who broke it.  Don't forget to take a backup first.
+* Or you can code up a bodge script to run in the [[#Hackery]] phase.
 
-We avoided git-cvsimport because it '''dropped branches it did not understand''', such as humpub-branch-52.
-
-''After this I saw no need to investigate [http://progetti.arstecnica.it/tailor/wiki Tailor] and other tools. -- mca''
+=== Revisions lost ===
+* Possibly caused by <tt>cvs admin -ko</tt> ?
+* These cause cvs2git to abort with an error.  You won't get a repository out.
+* We used [[#Hackery]] to insert some bogus deltatext.
 
 == CVS merges are broken ==
 Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?) not propagated into Git - the files merely change with no record of why.
@@ -174,6 +190,5 @@ Output is pushed to
 
 By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have a clean slate for the future but retain access to old versions.  By keeping CVS history and the Git future in separate repositories, we keep the branch list short and initial history is clear of cvs2git fixups and strange merges.
 
-* Other preparations and fixes we made,
-** Find unlabelled branches and restore their branch tags.  Usually this is caused by attempting to move a branch with <tt>cvs tag -F -B -b</tt> and it cannot be done right.  These can be fixed with <tt>cvs rtag</tt> but it is fiddly.
-** In some cases, apply pre-import patches to the ,v files to resolve two-commits-in-one-second ordering issues or fix up lost deltatext.
+=== Hackery ===
+Happens between "get a copy of the ,v files" and "run cvs2git", if the relevant shellscript is present, to apply pre-import patches to the ,v files.
