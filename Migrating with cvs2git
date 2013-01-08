@@ -2,10 +2,10 @@
 This page sprouted from [[Anacode: Version Control]] in order to document the process after the fact.
 
 == Successes ==
-* Migration of <tt>ensembl-otter</tt> from {{ecvs|ensembl-otter/}} to {{git|anacode/ensembl-otter}}
+* Migration of <tt>ensembl-otter</tt> from {{ecvs|ensembl-otter/}} to {{git|anacode/ensembl-otter}} and https://github.com/Anacode
+*: ''We imported the entire module as one Git repository, and it makes sense this way.''
 * Imports of other ensembl modules - these are for our internal (read-only) use.  Many have branch structure problems imported from CVS.
-* Some smaller subprojects from Anacode CVS
-
+* The <tt>dbchk/</tt> module (subdirectory) from <tt>/repos/cvs/anacode</tt> CVS, mostly as proof of concept after extending the importer wrapper.
 
 == Migration recipe ==
 (incomplete - this is a reconstruction of what we did)
@@ -28,12 +28,22 @@ Be clear about what you lose, that CVS provides.  Many of these neat tricks turn
 * Expect that what you learn during one migration may affect how you prefer to do another.
 
 === Sub-projects ===
-If the CVS repository contains multiple sub-projects, choose one or two to extract as Git repositories.
+Some CVS repositories contain one well-defined project.
 
-See [[#Mapping of CVS modules to git repos]].
+Others contain multiple sub-projects, either split into well-defined "CVS modules" (subdirectories) or scattered more loosely.
+These may need breaking into pieces, in a way that they would not if you switched to Subversion.
 
-* When migration of these is underway, you can continue with the remainder.
-** Between fetching ,v files and running cvs2git, simply unlink all previously-imported files.
+If you have sub-projects, choose one or two to extract as Git repositories.  Bear in mind
+* The issues of breaking atomic commits.
+*: You might prefer to avoid breaking atomic-in-CVS commits across two Git repositories,
+*: unless they are only atomic because someone ran <tt>cvs ci -m .</tt> in the top level.
+* Whether it would be meaningful to make a branch or tag covering all sub-projects.
+*: If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
+* At the code dependency level, which project requires the others?
+*: We preferred to reduce circular dependencies.  Some projects are cross-linked like a thermoset polymer.
+
+When migration of these is underway, you can continue with the remainder.
+: Between fetching ,v files and running cvs2git, simply unlink all previously-imported files.
 
 === Select an importer ===
 You're here because you want to generate an accurate Git repository from your old history.
@@ -87,6 +97,9 @@ While it is still in CVS, start to remove from the codebase any CVS-specific fea
 * Fix -kb (binary flag) - relevant only for Windows users?  I think Git handles this with smudge filters.
 * Stop using <tt>CVSROOT/modules</tt> .
 * Terminate as many CVS branches as possible (if any).
+* Find and remove explicit references to CVS
+** Mostly in POD + comments
+** Also in install/make_dist scripts.
 * Create or update any deployment scripts.
 
 === Pick a date ===
@@ -149,21 +162,6 @@ Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?)
 
 It is possible to update the Git history to record the additional parents.  The cvs2git wrapper currently does not help with that.  ''I did this for perlunit.sf.net , it is tedious -- mca''
 
-== Mapping of CVS modules to git repos ==
-For ensembl-otter we imported the entire module as one Git repository, and it makes sense this way.
-
-Some CVS repositories contain multiple sub-projects.  They may need breaking into pieces, in a way that they would not if you switched to Subversion.
-
-''I did this for <tt>dbchk/</tt> from <tt>/repos/cvs/anacode</tt> CVS, after extending the importer wrapper, mostly as proof of concept. -- mca''
-
-Bear in mind
-* The issues of breaking atomic commits.
-*: You might prefer to avoid breaking atomic-in-CVS commits across two Git repositories, unless they are only atomic because someone ran <tt>cvs ci -m .</tt> in the top level.
-* Whether it would be meaningful to make a branch or tag covering all sub-projects.
-*: If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
-* At the code dependency level, which project requires the others?
-*: We preferred to reduce circular dependencies.  Some projects are cross-linked like a thermoset polymer.
-
 == Old content, to revise ==
 (delivery here triggerd by mg13's IGM talk 2012-05)
 
@@ -179,9 +177,3 @@ By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have 
 * Other preparations and fixes we made,
 ** Find unlabelled branches and restore their branch tags.  Usually this is caused by attempting to move a branch with <tt>cvs tag -F -B -b</tt> and it cannot be done right.  These can be fixed with <tt>cvs rtag</tt> but it is fiddly.
 ** In some cases, apply pre-import patches to the ,v files to resolve two-commits-in-one-second ordering issues or fix up lost deltatext.
-
-==== Actions ====
-# Find and remove CVS keywords
-# Find and remove explicit references to CVS
-#* Mostly in POD + comments
-#* Also in install/make_dist scripts.
