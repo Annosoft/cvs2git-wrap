@@ -14,7 +14,7 @@ us know if this troubles you, otherwise '''fork and be merry'''.
 
 === History ===
 This page sprouted from
-[[cvs2git-wrapper/Ana_VC_general.mediawiki|Anacode: Version Control]]
+[[Ana_VC_general.mediawiki|Anacode: Version Control]]
 in order to document the process after the fact.
 
 Originally it lived in a MediaWiki instance named SangerWiki.
