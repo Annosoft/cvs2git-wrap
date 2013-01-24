@@ -1,5 +1,52 @@
-[[Category:Anacode]] [[Category:Version Control]]
-This page sprouted from [[Anacode: Version Control]] in order to document the process after the fact.
+== Introduction ==
+These files were created as an internal project during the migration
+of [https://github.com/Anacode/ensembl-otter] from
+[http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/?root=ensembl CVS].
+
+This public project is an export of those files, primarily for the
+benefit of other teams on the Genome Campus wishing to migrate code
+from these CVS repositories; but also the process may be useful
+elsewhere.
+
+In the interest of getting the files out - this release will include
+junk, broken links and references to stuff you can't see.  Please let
+us know if this troubles you, otherwise '''fork and be merry'''.
+
+=== History ===
+This page sprouted from
+[[cvs2git-wrapper/Ana_VC_general.mediawiki|Anacode: Version Control]]
+in order to document the process after the fact.
+
+Originally it lived in a MediaWiki instance named SangerWiki.
+
+The wiki markup is retained and renders well enough on Github to make
+sense, but many links are broken.
+
+=== Licences ===
+In accordance with Sanger Institute release guidelines,
+* Code in this project is to be licensed under the [http://www.gnu.org/licenses/license-list.html#ModifiedBSD modified (no advertising) BSD].
+* Documentation (*.mediawiki and presentation files) is to be licenced under [http://creativecommons.org/licenses/by/3.0/ Creative Commons Attribution 3.0 Unported (CC BY 3.0)].
+
+This is not made clear in all individual files, which reflects only
+the hasty (but blessed by team leader) publication of internal files.
+
+=== Old README ===
+Before import of SangerWiki (*.mediawiki) docs, there was a sparse <tt>README</tt>.
+
+ These scripts are "temporary".
+ 
+ Some files are historic / vestigial.
+ 
+ 
+ The ensembl-otter module was imported regularly
+ via a crontab line for mca@deskpro17119
+ 
+   9,39 8-18       * * *   PUSH_AND_CLEAN=1 $C2R/add -Q cvs2git  $ANACODE_TEAM_TOOLS/git-importing/reimport.sh ensembl-otter
+ 
+ ("$C2R/add -Q cvs2git" is a cron2rss wrapper)
+ 
+ 
+ Other modules are imported ad-hoc.
 
 == Successes ==
 * Migration of <tt>ensembl-otter</tt> from {{ecvs|ensembl-otter/}} to {{git|anacode/ensembl-otter}} and https://github.com/Anacode

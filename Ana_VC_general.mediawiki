@@ -1,5 +1,3 @@
-[[Category:Anacode|V]]
-[[Category:Version Control]]
 == CVS modules ==
 === Publicly visible ===
 In the [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/?root=ensembl Ensembl CVS server],
@@ -121,7 +119,7 @@ When making changes, it is useful to have "all the related code" to hand.  This 
 
 == Migration to Git ==
 <div style='margin:2em; border: 3px green solid; padding: 1em'> This section needs revising.  It was written while switch-over was in the future.
-Content of a more historical perspective in [[Migrating with cvs2git]]</div>
+Content of a more historical perspective in [[README.mediawiki|Migrating with cvs2git]]</div>
 
 We are migrating existing team-owned code from CVS to Git.  It is [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?s=anacode visible on the internal Gitweb] server.
 
