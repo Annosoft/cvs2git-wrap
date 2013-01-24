@@ -1,0 +1,9 @@
+---
+dns_qual: .internal.sanger.ac.uk
+mediawiki:
+  api_url: http://mediawiki.internal.sanger.ac.uk/wiki/api.php
+  no_proxy: 1
+pages:
+  - 'Anacode: Version Control'
+  - Migrating with cvs2git
+rvlimit: 50
