@@ -1,0 +1,194 @@
+[[Category:Anacode]] [[Category:Version Control]]
+This page sprouted from [[Anacode: Version Control]] in order to document the process after the fact.
+
+== Successes ==
+* Migration of <tt>ensembl-otter</tt> from {{ecvs|ensembl-otter/}} to {{git|anacode/ensembl-otter}} and https://github.com/Anacode
+*: ''We imported the entire module as one Git repository, and it makes sense this way.''
+* Imports of other ensembl modules - these are for our internal (read-only) use.  Many have branch structure problems imported from CVS.
+* The <tt>dbchk/</tt> module (subdirectory) from <tt>/repos/cvs/anacode</tt> CVS, mostly as proof of concept after extending the importer wrapper.
+
+== Migration recipe ==
+(incomplete - this is a reconstruction of what we did)
+
+=== Look before you leap ===
+Be clear about what you lose, that CVS provides.  Many of these neat tricks turn out to be not such a good idea in use, anyway.
+
+* Ease of mixing multiple projects in one repository.
+* Ability to compose a set of these subprojects via <tt>CVSROOT/modules</tt>
+* Some attempt to track where checkouts have been scattered, via <tt>CVSROOT/history</tt>
+* Easy substitution of keywords in source files
+* Appending of commit-comment text to affected files via <tt>$Log$</tt>
+* Ability to quietly rewrite history without making a commit.  Git explicitly supports history rewrite, and explicitly prevents "silent" history rewrite ''aka.'' corruption.
+* Apparent atomicity of commits between subprojects (even different repositories?).
+*: Older CVS commits were never atomic, but importers can patch them up so they looked like they were.  Heuristics are used.
+*: Newer CVS commits have a commitid field, visible in <tt>cvs log</tt> output.
+*: If two CVS modules (directories) are transferred to separate Git repositories, atomicity of commits between them is lost.  This can (has in our experience) caused deployment problems.
+*:* ''e.g.'' a module and its calling scripts having the meaning of some variable changed, but only one of them being deployed.
+*: Git supports the notion of submodules, as a nesting of repositories.  These can record simultaneous state of multiple projects, ''but I haven't found them very practical. -- mca''
+* Expect that what you learn during one migration may affect how you prefer to do another.
+
+=== Sub-projects ===
+Some CVS repositories contain one well-defined project.
+
+Others contain multiple sub-projects, either split into well-defined "CVS modules" (subdirectories) or scattered more loosely.
+These may need breaking into pieces, in a way that they would not if you switched to Subversion.
+
+If you have sub-projects, choose one or two to extract as Git repositories.  Bear in mind
+* The issues of breaking atomic commits.
+*: You might prefer to avoid breaking atomic-in-CVS commits across two Git repositories,
+*: unless they are only atomic because someone ran <tt>cvs ci -m .</tt> in the top level.
+* Whether it would be meaningful to make a branch or tag covering all sub-projects.
+*: If you have existing CVS branches or tags which cover a subset of the files present at the time, ask what this means for the relationship of those files across those set boundaries.
+* At the code dependency level, which project requires the others?
+*: We preferred to reduce circular dependencies.  Some projects are cross-linked like a thermoset polymer.
+
+When migration of these is underway, you can continue with the remainder.
+: In the [[#Hackery]] phase, simply unlink all previously-imported files.
+
+=== Select an importer ===
+You're here because you want to generate an accurate Git repository from your old history.
+
+You could omit this and start with one Git commit containing the most recent state at import time.
+* Throwing away history like this, or making it very difficult to access across the VCS type boundary, is likely to make future maintenance more difficult.
+* It is difficult to patch up the history later.
+
+=== Why <tt>cvs2git</tt>? ===
+* Other tools are listed on https://git.wiki.kernel.org/index.php/Interfaces,_frontends,_and_tools#Interaction_with_other_Revision_Control_Systems
+* Reading [http://lwn.net/Articles/409635/ Lessons from PostgreSQL's Git transition] was a strong influence on Anacode's choice of cvs2git. ''I was encouraged by their attention to detail. -- mca''
+* [http://cvs2svn.tigris.org/cvs2git.html cvs2git] is based on the cvs2svn importer, which is maintained alongside CVS itself.  We took the reasonable view that these maintainers understand CVS ,v files (meaning of and problems with) best.
+* For imports on several projects, for every branch and tag, the import wrapper runs a <tt>diff -r</tt> .  Nothing significant has shown up.
+*: There are some corner cases relating to $Keyword$ expansion, possibly during CVS vendor branch setup, which cause minor diffs.  ''I ignored these. -- mca''
+* Where Git commitids have been unstable, there has always been a sane explanation.
+** Non-historic permissions changed manually.
+** Same-second commits being reordered, for no discernible reason.  Hash enumeration order?
+
+We avoided <tt>git-cvsimport</tt> because it '''dropped branches it did not understand''', such as humpub-branch-52.
+
+''After this I saw no need to investigate [http://progetti.arstecnica.it/tailor/wiki Tailor] and other tools. -- mca''
+
+=== Perform a trial import ===
+* Expect to be doing many of these and start automating things.
+* Look at the result with <tt>gitk</tt> and run some diffs against CVS checkouts.
+* Check the branches and tags.  There should be 1:1 correspondence, except for MAIN ''vs.'' master.
+* Expect to find that your project's [[#CVS history is broken]].
+
+=== Grow the import process ===
+Make a script which performs your import in a repeatable way.
+* Put it on a crontab.  Fresh CVS commits should then start appearing in a Git repository automatically.
+* Full import & checking runs may take 30 minutes.  This may be reduced by some caching.
+
+=== Run with both ===
+Run with both systems for a while, '''considering CVS to be the master'''.
+
+;For early adopters,:
+:# build commits in Git
+:# squash or otherwise commit them to CVS, being careful to watch the outgoing diffs to avoid accidental reverts.
+:# wait for the importer to re-run
+:# <tt>git pull --rebase</tt> or similar, to rebase your un-pushed commits onto the latest CVS.
+: You should find that your "pushed" Git commits disappear from the rebased branch.  This works almost as well as the <tt>git-svn</tt> workflow.
+:* beware merges and branches.  ''We stuck to linear -- mca''
+:* start replacing any CVS-dependent machinery in the project.
+;For late adopters,:
+:* Ensure you can clone the new repositories, commit and push.
+:* Look at the shiny new tools. ''<tt>gitk --all</tt> is my favourite -- mca''
+
+''We ran in this state for some months. -- mca''
+
+=== Stability of import ===
+Various things may cause Git branches taken off CVS history to need rebasing.
+* Changes to the import process, including the [[#Hackery]] phase.
+* Changing the nature of the initial commit in the Git repository.
+* Fixes to permissions of CVS ,v files with chmod.
+* The historic ordering of non-atomic same-second CVS commits, as perceived by the importer.
+*: This seems to have instabilities, which we removed by bumping one commit on a second during [[#Hackery]].
+
+=== Disentangle from CVS ===
+While it is still in CVS, start to remove from the codebase any CVS-specific features.
+* $Keyword$ expansion, and any code that uses it ''e.g.'' <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> .  XXX: suggestions for replacements - distzilla, home-rolled version, git-describe
+* Make one last pass of fixing up execute permissions
+*: You can change them (via commit) in Git
+*: Changing them in CVS (via chmod) will change all subsequent commitids on the next cvs2git run '''after the first appearance of that file'''.  Early adopters must rebase all following branches.
+* Fix -kb (binary flag) - relevant only for Windows users?  I think Git handles this with smudge filters.
+* Stop using <tt>CVSROOT/modules</tt> .
+* Terminate as many CVS branches as possible (if any).
+* Find and remove explicit references to CVS
+** Mostly in POD + comments
+** Also in install/make_dist scripts.
+* Create or update any deployment scripts.
+
+=== Pick a date ===
+Decide when to throw the switch.
+* Ensure all other repository users are following, by whatever means.
+* Arrange support from Systems group, if necessary.
+* Chase down old CVS working copies and commit until "clean enough".
+*: Later, commits will be impossible.
+*: Diffs and updates will remain possible until the CVS server goes away.  You may plan to leave it up indefinitely, or keep a tarball of it "just in case".
+
+=== Switch ===
+# Stop the cvs2git importer loop
+# Commit a prominent <tt>MOVED.txt</tt> or similar file to CVS, explaining where development is continuing.
+# Make the old CVS modules (directories) read-only.  [[SIRT:207328]].
+#: This will be trickier if you are importing a scattered set of files.  Have the script prepared.
+
+(Optional) Separate the "CVS history" from "the future".
+* Leave the complete CVS history in one archive repository,
+*: with all branches and tags renamed into a <tt>cvs/</tt> namespace, ''e.g.'' <tt>refs/heads/cvs/humpub-branch-52</tt> .  The import wrapper does this for you.
+*: the entire repository named one level down.  Our import wrapper did this by pushing successful conversions to two places, one containing only master.
+*: made read-only after a final import run for <tt>MOVED.txt</tt>.
+* Continue working from a <tt>master</tt> branch, plus any other branches carried over, stored in another Git repository.
+*: You proceed on a relatively clean (long, but linear and uncluttered with tags) Git history.
+* It is easy to add (<tt>git fetch ancient</tt>) and remove (<tt>rm -r .git/refs/heads/cvs/</tt> or similar) refs for the old CVS history, in any Git working copy.
+* Nothing is lost, but the namespace is nicely clean.
+
+=== Afterwards ===
+Git is now the primary source - migration complete.
+* Be prepared to deal with the inevitable mistakes that may be caused by adopting a new tool.
+*: We were pleased that ours were not published to Github, due to a decision to push release branches but not master.
+
+== CVS history is broken ==
+To start with, you should suspect your CVS history.
+
+Unless you are certain nobody has every moved any tags or taken a text
+editor to any <tt>,v</tt> files, on a ten year old project it is inevitable
+there will be broken files and branches.
+
+''I have some experience patching these up. -- mca''
+
+=== Branch tags lost or moved ===
+# Find unlabelled branches.  They will import as numeric branch names like <tt>1.1.2.2</tt>
+# Restore their branch tags.  This will require some sleuthing, local knowledge and/or guesswork.
+#* In many cases the branch tag is still there on another numeric version.
+#* Often it will have no commits on the branch (be grateful).
+#* Otherwise, note that your history is ambiguous.
+
+Also note,
+* Attempting to move a branch with <tt>cvs tag -F -B -b</tt> cannot be done right.
+*: Instead try <tt>cvs rtag</tt> and inspect the results with ViewVC's graphviz generator (<tt>view=graph</tt>).
+* If your CVS admin had the foresight to include a taglog, write and say thanks.
+* Problems may be fixed directly in the repository, if you have the necessary access and no less confidence than the person who broke it.  Don't forget to take a backup first.
+* Or you can code up a bodge script to run in the [[#Hackery]] phase.
+
+=== Revisions lost ===
+* Possibly caused by <tt>cvs admin -ko</tt> ?
+* These cause cvs2git to abort with an error.  You won't get a repository out.
+* We used [[#Hackery]] to insert some bogus deltatext.
+
+== CVS merges are broken ==
+Branch merges made with <tt>cvs up -j</tt> are (probably? did I miss something?) not propagated into Git - the files merely change with no record of why.
+
+It is possible to update the Git history to record the additional parents.  The cvs2git wrapper currently does not help with that.  ''I did this for perlunit.sf.net , it is tedious -- mca''
+
+== Old content, to revise ==
+(delivery here triggerd by mg13's IGM talk 2012-05)
+
+=== Import process ===
+Our [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=git-importing;hb=refs/heads/master wrapper scripts] in [[Team tools]] perform repeatable imports with stable commitids, and check the contents of tags and the tips of all branches against CVS.  This process has proved fairly stable but can be disrupted by the movement of CVS tags.
+
+Output is pushed to
+[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/cvs/ensembl-otter.git anacode/cvs/ensembl-otter.git] (all CVS tags and branches, no other Git pushes) and to
+[http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi/anacode/ensembl-otter.git anacode/ensembl-otter.git] (MAIN branch only, and any other Git pushes).
+
+By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have a clean slate for the future but retain access to old versions.  By keeping CVS history and the Git future in separate repositories, we keep the branch list short and initial history is clear of cvs2git fixups and strange merges.
+
+=== Hackery ===
+Happens between "get a copy of the ,v files" and "run cvs2git", if the relevant shellscript is present, to apply pre-import patches to the ,v files.
