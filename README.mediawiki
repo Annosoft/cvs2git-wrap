@@ -3,6 +3,14 @@ These files were created as an internal project during the migration
 of [https://github.com/Anacode/ensembl-otter] from
 [http://cvs.sanger.ac.uk/cgi-bin/viewvc.cgi/ensembl-otter/?root=ensembl CVS].
 
+The team-internal project was announced in a presentation
+''GIT - making a hash of it'' by Michael to the rest of the
+Informatics Group on 29 May 2012.
+[https://github.com/Anacode/cvs2git-wrap/blob/master/cvs2git/IGM%20Git%20copyright.pptx (pptx)]
+[https://github.com/Anacode/cvs2git-wrap/blob/master/cvs2git/IGM%20Git%20copyright.pdf (pdf)].
+Internal - [https://helix.wtgc.org/system/files/users/wtsi/c/cb13/2012_05_29_m_gray_igm_git.pdf pdf]
+from [https://helix.wtgc.org/groups/information/igm-talks IGM Talks].
+
 This public project is an export of those files, primarily for the
 benefit of other teams on the Genome Campus wishing to migrate code
 from these CVS repositories; but also the process may be useful
