@@ -40,6 +40,17 @@ In accordance with Sanger Institute release guidelines,
 This is not made clear in all individual files, which reflects only
 the hasty (but blessed by team leader) publication of internal files.
 
+=== Ensembl ===
+Ensembl migration to Git is under discussion ([http://lists.ensembl.org/pipermail/dev/2012-September/thread.html#8039 here] and [http://lists.ensembl.org/pipermail/dev/2012-October/thread.html#8105 here]).
+
+[http://lists.ensembl.org/pipermail/dev/2012-October/008111.html Paul requested] that views be mailed direct to him.
+
+Anacode recommends against using this cvs2git process or publishing
+its output, except
+* when you are the code owner trying the process
+* as part of your own internal process, by which CVS patches are generated
+* to demonstrate something (temporary and disposable Git import)
+
 === Old README ===
 Before import of SangerWiki (*.mediawiki) docs, there was a sparse <tt>README</tt>.
 

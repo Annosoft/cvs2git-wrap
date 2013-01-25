@@ -110,7 +110,7 @@ We are migrating existing team-owned code from CVS to Git.  It is [http://git.in
 ;Other ensembl: There are also imports of other ensembl modules - these are for our internal (read-only) use.
 :* Many have problems with the branch structures.
 :* They are updated infrequently, when we need to.
-:* Ensembl migration to Git is under discussion ([http://lists.ensembl.org/pipermail/dev/2012-September/thread.html#8039 here] and [http://lists.ensembl.org/pipermail/dev/2012-October/thread.html#8105 here]).  [http://lists.ensembl.org/pipermail/dev/2012-October/008111.html Mail Paul] if you need it.
+:* [[README.mediawiki#ensembl|This is not]] Ensembl migration to Git.
 
 === Trac integration ===
 * Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
