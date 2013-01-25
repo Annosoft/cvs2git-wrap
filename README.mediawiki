@@ -6,8 +6,8 @@ of [https://github.com/Anacode/ensembl-otter] from
 The team-internal project was announced in a presentation
 ''GIT - making a hash of it'' by Michael to the rest of the
 Informatics Group on 29 May 2012.
-[https://github.com/Anacode/cvs2git-wrap/blob/master/cvs2git/IGM%20Git%20copyright.pptx (pptx)]
-[https://github.com/Anacode/cvs2git-wrap/blob/master/cvs2git/IGM%20Git%20copyright.pdf (pdf)].
+[https://github.com/Anacode/cvs2git-wrap/raw/master/IGM%20Git%20copyright.pptx (pptx)]
+[https://github.com/Anacode/cvs2git-wrap/raw/master/IGM%20Git%20copyright.pdf (pdf)].
 Internal - [https://helix.wtgc.org/system/files/users/wtsi/c/cb13/2012_05_29_m_gray_igm_git.pdf pdf]
 from [https://helix.wtgc.org/groups/information/igm-talks IGM Talks].
 
