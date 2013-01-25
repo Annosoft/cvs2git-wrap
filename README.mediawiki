@@ -33,7 +33,9 @@ sense, but many links are broken.
 === Licences ===
 In accordance with Sanger Institute release guidelines,
 * Code in this project is to be licensed under the [http://www.gnu.org/licenses/license-list.html#ModifiedBSD modified (no advertising) BSD].
-* Documentation (*.mediawiki and presentation files) is to be licenced under [http://creativecommons.org/licenses/by/3.0/ Creative Commons Attribution 3.0 Unported (CC BY 3.0)].
+* Documentation (*.mediawiki and presentation files) is to be licenced under [http://creativecommons.org/licenses/by/3.0/ Creative Commons Attribution 3.0 Unported (CC BY 3.0)]
+** Attribution to the Anacode team of the [http://www.sanger.ac.uk/ Wellcome Trust Sanger Institute].
+** Code inside the documentation is probably trivial or just for example, so sticking with BSD not CC-BY-3.0 .
 
 This is not made clear in all individual files, which reflects only
 the hasty (but blessed by team leader) publication of internal files.
