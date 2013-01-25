@@ -1,7 +1,0 @@
-commit refs/heads/master
-mark :999999999
-author Matthew Astley <mca@sanger.ac.uk> 1296556091 +0000
-committer Matthew Astley <mca@sanger.ac.uk> 1296556091 +0000
-data 21
-initial empty commit
-

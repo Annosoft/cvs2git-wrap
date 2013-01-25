@@ -260,3 +260,6 @@ By keeping all CVS branches and tags under the <tt>cvs/</tt> namespace, we have 
 
 === Hackery ===
 Happens between "get a copy of the ,v files" and "run cvs2git", if the relevant shellscript is present, to apply pre-import patches to the ,v files.
+
+Examples of this are in the history of <tt>master</tt> branch and
+remain on the <tt>anacode</tt> branch.
