@@ -267,7 +267,7 @@ remain on the <tt>anacode</tt> branch.
 == Related ==
 === Initial Empty Commit ===
 * When viewing commit diffs in gitk, there is no diff for the initial commit. This in turns means that searches for commit "adding/removing string" will not show that commit, even if the initial tree contains the string.
-* When grafting a new commit tree onto an existing project, it sense to me if both have a common tree at some point.  That point it the initial commit.
+* When grafting a new commit tree onto an existing project, it makes sense to me for both have a common tree at some point.  That point it the initial commit.
 
 For these reasons, I [https://github.com/mca-wtsi/git-yacontrib/blob/master/bin/git-iec routinely begin new repositories] with <tt>git commit --allow-empty -m 'initial empty commit'</tt>
 
