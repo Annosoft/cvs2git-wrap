@@ -152,7 +152,7 @@ do_import() {
     cd $REPOGIT
 
     # Build importable files
-    cvs2git  --username cvs2git --keep-cvsignore --cvs-revnums \
+    cvs2git  --username cvs2git --keep-cvsignore --cvs-revnums --fallback-encoding=ascii \
 	--blobfile out.blob --dumpfile out.dump \
 	-q \
 	$REPOCVS
