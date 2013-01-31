@@ -263,3 +263,17 @@ Happens between "get a copy of the ,v files" and "run cvs2git", if the relevant 
 
 Examples of this are in the history of <tt>master</tt> branch and
 remain on the <tt>anacode</tt> branch.
+
+== Related ==
+=== Initial Empty Commit ===
+* When viewing commit diffs in gitk, there is no diff for the initial commit. This in turns means that searches for commit "adding/removing string" will not show that commit, even if the initial tree contains the string.
+* When grafting a new commit tree onto an existing project, it sense to me if both have a common tree at some point.  That point it the initial commit.
+
+For these reasons, I [https://github.com/mca-wtsi/git-yacontrib/blob/master/bin/git-iec routinely begin new repositories] with <tt>git commit --allow-empty -m 'initial empty commit'</tt>
+
+During the cvs2git munging process, such a commit is inserted at the beginning of the <tt>git-fast-import(1)</tt> stream.
+
+* For subsequent cvs2git import processes to be repeatable, all properties of this IEC must be identical.
+* To easily distinguish different repositories from each other, or match up clones, one property that could be useful is the commitid(s) of the set of commits with no parents.
+
+In resolving these useful properties, the code generating IEC (<tt>do_import</tt>) changed several times.  Currently the dates are fixed to arbitrary values and the author is changed via <tt>$IEC_NAME</tt> .  There is also an escape hatch whereby fast-import data can be given directly in an override file via <tt>$IEC_FILE</tt> .
