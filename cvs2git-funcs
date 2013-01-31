@@ -38,7 +38,7 @@ fetchrepo() {
 	    exit 9 ;;
     esac
 
-    [ -n "$CVS2GIT_SQUIRREL" ] && squirrel_hwime_cvs
+    [ -n "$CVS2GIT_SQUIRREL_DIR" ] && squirrel_hwime_cvs
 
     cvsrepo_lockfix
     apply_hackery
@@ -90,11 +90,11 @@ unpack_hwime() { # here's one I made earlier
 
 # squirrel away some shortcut tarballs?
 squirrel_hwime_cvs() {
-    (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.repo.tgz repo)
+    (cd $C2G_TMP && tar cfz "${CVS2GIT_SQUIRREL_DIR}/${PROJ}.repo.tgz" repo)
 }
 
 squirrel_hwime_git() {
-    (cd $C2G_TMP && tar cfz ~/tmp/$PROJ.git.tgz git)
+    (cd $C2G_TMP && tar cfz "${CVS2GIT_SQUIRREL_DIR}/${PROJ}.git.tgz" git)
 }
 
 
@@ -182,7 +182,7 @@ this was made just after the cvs2git import process
     # For git_preresetcheck
     touch .git/c2g-mark
 
-    [ -n "$CVS2GIT_SQUIRREL" ] && squirrel_hwime_git
+    [ -n "$CVS2GIT_SQUIRREL_DIR" ] && squirrel_hwime_git
 
     # Tidy up and make a neat checkout
     rm -v out.blob out.iec out.dump

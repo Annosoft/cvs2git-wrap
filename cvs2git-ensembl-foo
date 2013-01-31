@@ -19,11 +19,11 @@ export PATH=$GIDIR:$PATH
 # Import functions
 source $GIDIR/cvs2git-funcs
 
-unpack_hwime ~/tmp/$PROJ.repo.tgz || fetchrepo
+unpack_hwime "${CVS2GIT_SQUIRREL_DIR}/${PROJ}.repo.tgz" || fetchrepo
 canon_repocvs $CANONPFX$( echo $PROJ | tr a-z A-Z )
 subdir_promote
 
-unpack_hwime ~/tmp/$PROJ.git.tgz  || do_import
+unpack_hwime "${CVS2GIT_SQUIRREL_DIR}/${PROJ}.git.tgz"  || do_import
 
 checktags_all
 
