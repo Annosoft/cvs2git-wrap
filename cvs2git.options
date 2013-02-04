@@ -116,8 +116,8 @@ from cvs2svn_lib.property_setters import SVNBinaryFileKeywordsPropertySetter
 # To choose the level of logging output, uncomment one of the
 # following lines:
 #logger.log_level = logger.WARN
-#logger.log_level = logger.QUIET
-logger.log_level = logger.NORMAL
+logger.log_level = logger.QUIET
+#logger.log_level = logger.NORMAL
 #logger.log_level = logger.VERBOSE
 #logger.log_level = logger.DEBUG
 
@@ -135,7 +135,7 @@ ctx.tmpdir = r'cvs2svn-tmp'
 ctx.revision_collector = GitRevisionCollector(
     # The file in which to write the git-fast-import stream that
     # contains the file revision contents:
-    'cvs2svn-tmp/git-blob.dat',
+    'out.blob',
 
     # The following option specifies how the revision contents of the
     # RCS files should be read.
@@ -198,7 +198,7 @@ ctx.cvs_log_decoder = CVSTextDecoder(
         #'latin1',
         'ascii',
         ],
-    #fallback_encoding='ascii',
+    fallback_encoding='ascii',
     eol_fix='\n',
     )
 # You might want to be especially strict when converting filenames to
@@ -374,7 +374,7 @@ global_symbol_strategy_rules = [
 # record the original author (for example, the creation of a branch).
 # This should be a simple (unix-style) username, but it can be
 # translated into a git-style name by the author_transforms map.
-ctx.username = 'cvs2svn'
+ctx.username = 'cvs2git'
 
 # ctx.file_property_setters and ctx.revision_property_setters contain
 # rules used to set the svn properties on files in the converted
@@ -453,7 +453,7 @@ ctx.file_property_setters.extend([
     ConditionalPropertySetter(
         cvs_file_is_binary, KeywordHandlingPropertySetter('untouched'),
         ),
-    KeywordHandlingPropertySetter('collapsed'),
+    KeywordHandlingPropertySetter('expanded'),
 
     ])
 ctx.revision_property_setters.extend([
@@ -528,14 +528,14 @@ author_transforms={
 ctx.output_option = GitOutputOption(
     # The file in which to write the git-fast-import stream that
     # contains the changesets and branch/tag information:
-    os.path.join(ctx.tmpdir, 'git-dump.dat'),
+    'out.dump',
 
     # The blobs will be written via the revision recorder, so in
     # OutputPass we only have to emit references to the blob marks:
     GitRevisionMarkWriter(),
 
     # Optional map from CVS author names to git author names:
-    author_transforms=author_transforms,
+    # author_transforms=author_transforms,
     )
 
 # Change this option to True to turn on profiling of cvs2svn (for
@@ -560,7 +560,7 @@ run_options.set_project(
     # The filesystem path to the part of the CVS repository (*not* a
     # CVS working copy) that should be converted.  This may be a
     # subdirectory (i.e., a module) within a larger CVS repository.
-    r'test-data/main-cvsrepos',
+    r'../repo',
 
     # A list of symbol transformations that can be used to rename
     # symbols in this project.
