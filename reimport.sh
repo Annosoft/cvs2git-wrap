@@ -71,9 +71,13 @@ case $PROJ in
         # cvs/MAIN now contains the "we have moved" files
         rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
         ;;
-    ensembl | anacode)
-        # These contain unlabeled-* branches
+    anacode)
+        # This contains unlabeled-* branches
         GITSFX=--BROKEN
+        ;;
+    ensembl)
+        # (This also contains unlabeled-* branches)
+        GITSFX=--SQLITE-DEVEL
         ;;
 esac
 
