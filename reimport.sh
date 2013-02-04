@@ -59,7 +59,8 @@ else
     exit 8
 fi
 
-cd $TMPDIR/cvs2git-ensembl-$PROJ.*/git
+IMPORTDIR=$TMPDIR/cvs2git-$PROJ.*
+cd $IMPORTDIR/git
 
 
 # Project-specific config
@@ -78,7 +79,7 @@ esac
 
 
 # Reject unexpected diffs
-DIFFLIST=$( find $TMPDIR/cvs2git-ensembl-$PROJ.*/checkrevs/ -type f -size +0 -ls )
+DIFFLIST=$( find $IMPORTDIR/checkrevs/ -type f -size +0 -ls )
 if [ -z "$DIFFLIST" ]; then
     :
     # looks ok
