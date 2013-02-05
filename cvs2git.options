@@ -560,7 +560,7 @@ run_options.set_project(
     # The filesystem path to the part of the CVS repository (*not* a
     # CVS working copy) that should be converted.  This may be a
     # subdirectory (i.e., a module) within a larger CVS repository.
-    r'../repo',
+    os.environ['REPOCVS'],
 
     # A list of symbol transformations that can be used to rename
     # symbols in this project.
