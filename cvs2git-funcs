@@ -152,7 +152,7 @@ do_import() {
     cd $REPOGIT
 
     # Build importable files
-    cvs2git --options=$GIDIR/cvs2git.options
+    REPOCVS="${REPOCVS}" cvs2git --options=$GIDIR/cvs2git.options
 
     # Cook up the IEC.  Options to let commitid depend on the input
     # project name, or provide the entire commit from a file.
