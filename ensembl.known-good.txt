@@ -340,6 +340,8 @@ fe9664183bbaa4dffe659538f0a3e5c05d5fa4d5 refs/tags/cvs/vega-31-1-branchpoint
 3866ab5a240cee5824f0324859d7bfd526cc924c refs/heads/cvs/branch-ensembl-xrefconfig
 3a3724dfc4342ca3c8438549d4b2749fc3d3d29f refs/heads/cvs/branch-eg-misc-scripts
 3a3724dfc4342ca3c8438549d4b2749fc3d3d29f refs/tags/cvs/merge-eg-misc-scripts
+440e602a8c8d9e3d7beae6c10c7d2c0e6c4c2431 refs/heads/cvs/branch-ensemblgenomes-17-70
+440e602a8c8d9e3d7beae6c10c7d2c0e6c4c2431 refs/tags/cvs/branch-ensemblgenomes-17-70-branchpoint
 5c333a5462f7c7a725e33981022575576e0da6b3 refs/heads/cvs/branch-e70-db-portability
 5c333a5462f7c7a725e33981022575576e0da6b3 refs/heads/cvs/branch-ensembl-70
 5c333a5462f7c7a725e33981022575576e0da6b3 refs/tags/cvs/e70-db-portability-branchpoint
