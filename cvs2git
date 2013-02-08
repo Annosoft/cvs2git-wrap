@@ -14,7 +14,7 @@
 #
 #   make install DESTDIR=INST.230.271 PYTHON=/software/bin/python-2.7.1
 
-CVS2SVN_INST="$HOME/gitwk-ext/cvs2svn/INST.230.271/software/python-2.7.1"
+CVS2SVN_INST="$HOME/Opt/cvs2svn-2.4.0/software/python-2.7.3"
 if [ ! -d $CVS2SVN_INST ]; then
     echo -e "cvs2svn: install expected in\n  $CVS2SVN_INST\n but not found.  mca had an install of this 2010-11 to 2012-02" >&2
     exit 1
