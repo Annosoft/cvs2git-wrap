@@ -110,7 +110,7 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     # We will mostly just be interested to hear about this, but then
     # also "somebody" needs to do a rebase or periodic merges from
     # cvs_MAIN.
-    if [ -z "$NO_PUSH_MASTER" ]; then
+    if [ -n "$HAS_NOCVS" -a -z "$NO_PUSH_MASTER" ]; then
         if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
 	    echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
         fi
