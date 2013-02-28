@@ -326,7 +326,7 @@ This section aims to persuade you that doing this publicly without
 consent of the project owner may be a short-term win, but the longer
 term cost is too high.
 
-==== Private migration ===
+==== Private migration ====
 Used privately, this migration process allows Git to be used as a more
 friendly front to the CVS backside.
 
