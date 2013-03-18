@@ -1,2 +1,6 @@
 
 *~
+
+# configuration - useful to commit on a team-specific branch,
+# but probably confusing to have on master
+cvs2git.options
