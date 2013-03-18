@@ -1,2 +1,7 @@
 
+# emacs
 *~
+
+# configuration - useful to commit on a team-specific branch,
+# but probably confusing to have on master
+*.kill-branches.txt

@@ -147,6 +147,16 @@ apply_hackery() {
     fi
 }
 
+kill_branches() {
+    KILLFILE=$GIDIR/$PROJ.kill-branches.txt
+    if [ -f "$KILLFILE" ]; then
+        echo "Deleting branches listed in '$KILLFILE'"
+        while read branch; do
+            git branch -D "$branch"
+        done < "$KILLFILE"
+    fi
+}
+
 do_import() {
     mkdir $REPOGIT
     cd $REPOGIT
@@ -186,6 +196,8 @@ this was made just after the cvs2git import process
 
     # Tidy up and make a neat checkout
     rm -v out.blob out.iec out.dump
+
+    kill_branches
 
     echo -e "\nTo view\n  (cd $REPOGIT && gitk --all &)\n\n"
 }
