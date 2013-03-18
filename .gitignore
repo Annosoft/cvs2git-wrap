@@ -4,6 +4,7 @@
 
 # configuration - useful to commit on a team-specific branch,
 # but probably confusing to have on master
+cvs2git.options
 *.kill-branches.txt
 
 # purely for speed optimisation of the checkrevs step
