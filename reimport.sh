@@ -6,6 +6,18 @@
 # Anacode team members only need to provide: ~/bin/rederr -> ~mca/bin/rederr
 #  or some other wrapper script which sends (stderr, stdout) to stdout.
 
+
+# Repo naming...
+#
+#   origin = central repo to which some cvs-derived branches are
+#     pushed, which is intended to be used for further workflows
+#
+#   archive = central repo containing a full set of cvs/* branches and
+#     tags, to which there should be no other pushes
+#
+#   (after do_import) $PWD is the temporary working copy from cvs2git
+
+
 set -e
 
 # Find Self
@@ -64,9 +76,9 @@ cd $IMPORTDIR/git
 
 
 # Project-specific config
+: ${GITURL_BASE:=intcvs1:/repos/git/anacode}
 case $PROJ in
     ensembl-otter)
-        HAS_NOCVS=1
         NO_PUSH_MASTER=1
         # cvs/MAIN now contains the "we have moved" files
         rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
@@ -74,8 +86,17 @@ case $PROJ in
     ensembl | anacode)
         # These contain unlabeled-* branches
         GITSFX=--BROKEN
+
+        # It is easier to understand if archive & origin have clear
+        # roles.  For migration purpose, running without an origin is
+        # maybe not a good idea; but we are still doing it 2013-04
+        NO_ORIGIN=1
         ;;
 esac
+GITURL_ARCHIVE=$GITURL_BASE/cvs/$PROJ$GITSFX.git
+GITURL_ORIGIN=$GITURL_BASE/$PROJ$GITSFX.git
+
+[ -n "$NO_ORIGIN" ] && unset GITURL_ORIGIN
 
 
 # Reject unexpected diffs
@@ -91,28 +112,28 @@ fi
 
 
 # Align with central repos
-git remote add origin intcvs1:/repos/git/anacode/cvs/$PROJ$GITSFX.git
+git remote add archive "$GITURL_ARCHIVE"
 git checkout -q cvs/main
 git branch -D master > /dev/null
 
-[ -n "$HAS_NOCVS" ] && git remote add nocvs intcvs1:/repos/git/anacode/$PROJ$GITSFX.git
+[ -n "$GITURL_ORIGIN" ] && git remote add origin "$GITURL_ORIGIN"
 
 
 # Push and cleanup is optional.  The crontab does this but it is
 # unhelpful for interactive use.
 if [ -n "$PUSH_AND_CLEAN" ]; then
     # Send up the tracking refs
-    git push -q origin --tags
-    git push -q origin --all
-    [ -n "$HAS_NOCVS" ] && git push -q nocvs cvs/main:cvs_MAIN
+    git push -q archive --tags
+    git push -q archive --all
+    [ -n "$GITURL_ORIGIN" ] && git push -q origin cvs/main:cvs_MAIN
 
-    # Move nocvs/master along...  could fail if somebody pushed to it.
+    # Move origin/master along...  could fail if somebody pushed to it.
     # We will mostly just be interested to hear about this, but then
     # also "somebody" needs to do a rebase or periodic merges from
     # cvs_MAIN.
-    if [ -n "$HAS_NOCVS" -a -z "$NO_PUSH_MASTER" ]; then
-        if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
-	    echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
+    if [ -n "$GITURL_ORIGIN" -a -z "$NO_PUSH_MASTER" ]; then
+        if ! git push -q origin remotes/origin/cvs_MAIN:master; then
+	    echo -e '\n\norigin repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
         fi
     fi
 
@@ -121,7 +142,7 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     rm -rf $TMPDIR
 else
     echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes: dry-run follows"
-    git push -n origin --tags
-    git push -n origin --all
-    [ -n "$HAS_NOCVS" ] && git push -n nocvs cvs/main:cvs_MAIN
+    git push -n archive --tags
+    git push -n archive --all
+    [ -n "$GITURL_ORIGIN" ] && git push -n origin cvs/main:cvs_MAIN
 fi
