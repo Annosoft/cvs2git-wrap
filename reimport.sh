@@ -1,10 +1,6 @@
 #! /bin/bash
 
 # Third-level wrapper: do the import again, push to central repo.
-# Makes local assumptions: rederr, push to intcvs1:/repos/git/anacode/...
-#
-# Anacode team members only need to provide: ~/bin/rederr -> ~mca/bin/rederr
-#  or some other wrapper script which sends (stderr, stdout) to stdout.
 
 
 # Repo naming...
@@ -16,6 +12,10 @@
 #     tags, to which there should be no other pushes
 #
 #   (after do_import) $PWD is the temporary working copy from cvs2git
+
+
+GITURL_BASE=intcvs1:/repos/git/anacode
+TEAMHACK=anacode
 
 
 set -e
@@ -47,11 +47,15 @@ if [ -d /dev/shm/$PROJ.* ]; then
     exit 7
 fi
 
-# Make a sub-tmp directory.  Let the team hack with it.
-umask 02
+# Make a sub-tmp directory.
+umask 022
 export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t $PROJ.XXXXXX )
-chgrp anacode $TMPDIR
-chmod g+ws,a+rx $TMPDIR
+if [ -n "$TEAMHACK" ]; then
+    # Let the team hack with it.
+    umask 02
+    chgrp $TEAMHACK $TMPDIR
+    chmod g+ws,a+rx $TMPDIR
+fi
 
 IMPLOG=$TMPDIR/import.$$.log
 
@@ -68,8 +72,8 @@ do_import() {
 # checkrevs failures.
 
     KNOWN_GOOD_CILIST=$GIDIR/$PROJ.known-good.txt \
-	ionice -n7 nice ~/bin/rederr \
-	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG
+	ionice -n7 nice \
+	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG 2>&1
 }
 
 if do_import; then
@@ -86,7 +90,6 @@ cd $IMPORTDIR/git
 
 
 # Project-specific config
-: ${GITURL_BASE:=intcvs1:/repos/git/anacode}
 case $PROJ in
     ensembl-otter)
         NO_PUSH_MASTER=1
