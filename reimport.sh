@@ -29,13 +29,19 @@ export PATH=$GIDIR:$PATH
 
 PROJ=$1
 if [ -z "$PROJ" ]; then
-    echo "Syntax: $0 <proj>"
+    echo "Syntax: $0 <proj>
+        PUSH_AND_CLEAN=1 $0 <proj>
+
+The default is a dry-run leaving files behind.  PUSH_AND_CLEAN will
+tidy up all temporary files unless the run fails."
     exit 1
 fi >&2
 
-# Guard against cronjob stack-up or headbanging failure
+# Guard against cronjob stack-up or headbanging failure.
+# Non- fast-forward pushes or checkrevs diffs in previous runs will
+# stop us here.
 if [ -d /dev/shm/$PROJ.* ]; then
-    echo -e "Still running?\n"
+    echo -e "Still running or failed last time?\n"
     ls -lart /dev/shm/$PROJ.*
     tail -v -n10 /dev/shm/$PROJ.*/import.*.log
     exit 7
@@ -51,11 +57,15 @@ IMPLOG=$TMPDIR/import.$$.log
 
 
 do_import() {
-    # Assume ~/.ssh/config is correct.  If not, don't pester the X11 user.
+    # Assume ~/.ssh/config is correct, ie. can find necessary keys.
+    # If not, don't pester the X11 user for a password just fail.
     DISPLAY=
 
 # List maintained with help from
 #   mk-known-good.sh ... > git-importing/$PROJ.known-good.txt
+#
+# This is intended for efficiency, but also prevents bailout due to
+# checkrevs failures.
 
     KNOWN_GOOD_CILIST=$GIDIR/$PROJ.known-good.txt \
 	ionice -n7 nice ~/bin/rederr \
@@ -81,7 +91,9 @@ case $PROJ in
     ensembl-otter)
         NO_PUSH_MASTER=1
         # cvs/MAIN now contains the "we have moved" files
-        rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
+
+        # ignore ancient & trivial difference
+        rm -vf $TMPDIR/cvs2git-$PROJ.*/checkrevs/sog.diff
         ;;
     ensembl | anacode)
         # These contain unlabeled-* branches
@@ -92,6 +104,9 @@ case $PROJ in
         # maybe not a good idea; but we are still doing it 2013-04
         NO_ORIGIN=1
         ;;
+    *)
+        echo "No config for project $PROJ" >&2
+        exit 1
 esac
 GITURL_ARCHIVE=$GITURL_BASE/cvs/$PROJ$GITSFX.git
 GITURL_ORIGIN=$GITURL_BASE/$PROJ$GITSFX.git
@@ -142,6 +157,7 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     rm -rf $TMPDIR
 else
     echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes: dry-run follows"
+    set -x
     git push -n archive --tags
     git push -n archive --all
     [ -n "$GITURL_ORIGIN" ] && git push -n origin cvs/main:cvs_MAIN
