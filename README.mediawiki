@@ -197,6 +197,9 @@ While it is still in CVS, start to remove from the codebase any CVS-specific fea
 ** Mostly in POD + comments
 ** Also in install/make_dist scripts.
 * Create or update any deployment scripts.
+** If you are considering <tt>git describe --tags</tt> to extract a label for the code, note that imported history may not be good sample material.  The release tags are likely to be separated from their branch by fixup commits.
+**: Fixup commits are created by cvs2svn (before the "2git" part of cvs2git), to maintain the accuracy of the tagged set of files.  Sometimes they are null commits, byt generally consist of removal of files which were not tagged in CVS.
+**: <tt>git describe</tt> will not look up the short side-branch for a label, so may be unable to return useful results.  During Git development you may place Git tags to allow a meaningful version number to be extracted automatically.
 
 === Pick a date ===
 Decide when to throw the switch.
