@@ -1,10 +1,22 @@
 #! /bin/bash
 
 # Third-level wrapper: do the import again, push to central repo.
-# Makes local assumptions: rederr, push to intcvs1:/repos/git/anacode/...
+
+
+# Repo naming...
 #
-# Anacode team members only need to provide: ~/bin/rederr -> ~mca/bin/rederr
-#  or some other wrapper script which sends (stderr, stdout) to stdout.
+#   origin = central repo to which some cvs-derived branches are
+#     pushed, which is intended to be used for further workflows
+#
+#   archive = central repo containing a full set of cvs/* branches and
+#     tags, to which there should be no other pushes
+#
+#   (after do_import) $PWD is the temporary working copy from cvs2git
+
+
+GITURL_BASE=intcvs1:/repos/git/anacode
+TEAMHACK=anacode
+
 
 set -e
 
@@ -17,37 +29,51 @@ export PATH=$GIDIR:$PATH
 
 PROJ=$1
 if [ -z "$PROJ" ]; then
-    echo "Syntax: $0 <proj>"
+    echo "Syntax: $0 <proj>
+        PUSH_AND_CLEAN=1 $0 <proj>
+
+The default is a dry-run leaving files behind.  PUSH_AND_CLEAN will
+tidy up all temporary files unless the run fails."
     exit 1
 fi >&2
 
-# Guard against cronjob stack-up or headbanging failure
+# Guard against cronjob stack-up or headbanging failure.
+# Non- fast-forward pushes or checkrevs diffs in previous runs will
+# stop us here.
 if [ -d /dev/shm/$PROJ.* ]; then
-    echo -e "Still running?\n"
+    echo -e "Still running or failed last time?\n"
     ls -lart /dev/shm/$PROJ.*
     tail -v -n10 /dev/shm/$PROJ.*/import.*.log
     exit 7
 fi
 
-# Make a sub-tmp directory.  Let the team hack with it.
-umask 02
+# Make a sub-tmp directory.
+umask 022
 export TMPDIR=$( TMPDIR=/dev/shm mktemp -d -t $PROJ.XXXXXX )
-chgrp anacode $TMPDIR
-chmod g+ws,a+rx $TMPDIR
+if [ -n "$TEAMHACK" ]; then
+    # Let the team hack with it.
+    umask 02
+    chgrp $TEAMHACK $TMPDIR
+    chmod g+ws,a+rx $TMPDIR
+fi
 
 IMPLOG=$TMPDIR/import.$$.log
 
 
 do_import() {
-    # Assume ~/.ssh/config is correct.  If not, don't pester the X11 user.
+    # Assume ~/.ssh/config is correct, ie. can find necessary keys.
+    # If not, don't pester the X11 user for a password just fail.
     DISPLAY=
 
 # List maintained with help from
 #   mk-known-good.sh ... > git-importing/$PROJ.known-good.txt
+#
+# This is intended for efficiency, but also prevents bailout due to
+# checkrevs failures.
 
     KNOWN_GOOD_CILIST=$GIDIR/$PROJ.known-good.txt \
-	ionice -n7 nice ~/bin/rederr \
-	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG
+	ionice -n7 nice \
+	$GIDIR/cvs2git-ensembl-foo $PROJ > $IMPLOG 2>&1
 }
 
 if do_import; then
@@ -66,20 +92,34 @@ cd $IMPORTDIR/git
 # Project-specific config
 case $PROJ in
     ensembl-otter)
-        HAS_NOCVS=1
         NO_PUSH_MASTER=1
         # cvs/MAIN now contains the "we have moved" files
-        rm -vf $TMPDIR/cvs2git-ensembl-otter.*/checkrevs/sog.diff
+
+        # ignore ancient & trivial difference
+        rm -vf $TMPDIR/cvs2git-$PROJ.*/checkrevs/sog.diff
         ;;
     anacode)
         # This contains unlabeled-* branches
         GITSFX=--BROKEN
+
+        # It is easier to understand if archive & origin have clear
+        # roles.  For migration purpose, running without an origin is
+        # maybe not a good idea; but we are still doing it 2013-04
+        NO_ORIGIN=1
         ;;
     ensembl)
         # (This also contains unlabeled-* branches)
+        NO_ORIGIN=1
         GITSFX=--SQLITE-DEVEL
         ;;
+    *)
+        echo "No config for project $PROJ" >&2
+        exit 1
 esac
+GITURL_ARCHIVE=$GITURL_BASE/cvs/$PROJ$GITSFX.git
+GITURL_ORIGIN=$GITURL_BASE/$PROJ$GITSFX.git
+
+[ -n "$NO_ORIGIN" ] && unset GITURL_ORIGIN
 
 
 # Reject unexpected diffs
@@ -95,28 +135,28 @@ fi
 
 
 # Align with central repos
-git remote add origin intcvs1:/repos/git/anacode/cvs/$PROJ$GITSFX.git
+git remote add archive "$GITURL_ARCHIVE"
 git checkout -q cvs/main
 git branch -D master > /dev/null
 
-[ -n "$HAS_NOCVS" ] && git remote add nocvs intcvs1:/repos/git/anacode/$PROJ$GITSFX.git
+[ -n "$GITURL_ORIGIN" ] && git remote add origin "$GITURL_ORIGIN"
 
 
 # Push and cleanup is optional.  The crontab does this but it is
 # unhelpful for interactive use.
 if [ -n "$PUSH_AND_CLEAN" ]; then
     # Send up the tracking refs
-    git push -q origin --tags
-    git push -q origin --all
-    [ -n "$HAS_NOCVS" ] && git push -q nocvs cvs/main:cvs_MAIN
+    git push -q archive --tags
+    git push -q archive --all
+    [ -n "$GITURL_ORIGIN" ] && git push -q origin cvs/main:cvs_MAIN
 
-    # Move nocvs/master along...  could fail if somebody pushed to it.
+    # Move origin/master along...  could fail if somebody pushed to it.
     # We will mostly just be interested to hear about this, but then
     # also "somebody" needs to do a rebase or periodic merges from
     # cvs_MAIN.
-    if [ -n "$HAS_NOCVS" -a -z "$NO_PUSH_MASTER" ]; then
-        if ! git push -q nocvs remotes/nocvs/cvs_MAIN:master; then
-	    echo -e '\n\nnocvs repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
+    if [ -n "$GITURL_ORIGIN" -a -z "$NO_PUSH_MASTER" ]; then
+        if ! git push -q origin remotes/origin/cvs_MAIN:master; then
+	    echo -e '\n\norigin repo: Note that master is no longer fast-forwardable.  Somebody should merge.\n'
         fi
     fi
 
@@ -125,7 +165,8 @@ if [ -n "$PUSH_AND_CLEAN" ]; then
     rm -rf $TMPDIR
 else
     echo -e "\n\nImport completed in $PWD\nLeaving you to push to remotes: dry-run follows"
-    git push -n origin --tags
-    git push -n origin --all
-    [ -n "$HAS_NOCVS" ] && git push -n nocvs cvs/main:cvs_MAIN
+    set -x
+    git push -n archive --tags
+    git push -n archive --all
+    [ -n "$GITURL_ORIGIN" ] && git push -n origin cvs/main:cvs_MAIN
 fi

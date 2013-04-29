@@ -93,7 +93,7 @@ In Git, any commit may be rebased, amended or otherwise munged.  But after it ha
 == Code QA measures ==
 * We have tools to run Perlcritic and "perl -c" on our code
 ** [http://git.internal.sanger.ac.uk/cgi-bin/gitweb.cgi?p=anacode/team_tools.git;a=tree;f=elisp;hb=HEAD emacs linkage]
-** For [[webpublish]], we [[SIRT:240746|check for AUTHOR sections in Perl source]] with perlcritic / as a prove(1)able test
+** For internal publishability, we check for AUTHOR sections in Perl source with perlcritic running on a Git hook
 * Jeremy runs cronjobs and ad-hoc passes of some tools?
 * intcvs1 {{git|anacode/ensembl-otter}} has '''.git/hooks'''
 ** to perlcritic the changed files (experimental)
@@ -111,8 +111,3 @@ We are migrating existing team-owned code from CVS to Git.  It is [http://git.in
 :* Many have problems with the branch structures.
 :* They are updated infrequently, when we need to.
 :* [[README.mediawiki#ensembl|This is not]] Ensembl migration to Git.
-
-=== Trac integration ===
-* Trac 0.11 [https://trac.internal.sanger.ac.uk/projects/anacode/wiki can only handle one Git repo].
-* [[SIRT:187199]] says wait on [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=563391 BTS 563391].  mca is subscribed.
-* ''I made an experimental fetch of multiple repositories' code into the one Trac-watched Git repository, under different namespaces.  This works but doesn't look especially useful. -- [[User:Mca|Mca]] 12:59, 31 May 2011 (UTC)''

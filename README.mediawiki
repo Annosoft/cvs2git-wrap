@@ -164,26 +164,42 @@ Run with both systems for a while, '''considering CVS to be the master'''.
 ''We ran in this state for some months. -- mca''
 
 === Stability of import ===
-Various things may cause Git branches taken off CVS history to need rebasing.
+Various small things may happen that cause the Git history to be
+wildly different in commitid on subsequent run of cvs2git.
+
 * Changes to the import process, including the [[#Hackery]] phase.
 * Changing the nature of the initial commit in the Git repository.
 * Fixes to permissions of CVS ,v files with chmod.
 * The historic ordering of non-atomic same-second CVS commits, as perceived by the importer.
 *: This seems to have instabilities, which we removed by bumping one commit on a second during [[#Hackery]].
 
+After such a commitid remapping event, you will need to rescue every derived clone,
+
+* branches taken off CVS history need rebasing
+* tags will be stale (left on the old branch), and need updating with <tt>git fetch -t</tt>
+
+These problems are more likely to affect early adopters of the import.
+If you plan to [[#Run with both]] for a long time or with large
+numbers of developers taking clones, the risk exposure of needing to
+do a lot of fixing up will of course be higher.
+
 === Disentangle from CVS ===
 While it is still in CVS, start to remove from the codebase any CVS-specific features.
 * $Keyword$ expansion, and any code that uses it ''e.g.'' <tt>my $VERSION = (qw$Revision: 1.1 $)[1];</tt> .  XXX: suggestions for replacements - distzilla, home-rolled version, git-describe
 * Make one last pass of fixing up execute permissions
-*: You can change them (via commit) in Git
-*: Changing them in CVS (via chmod) will change all subsequent commitids on the next cvs2git run '''after the first appearance of that file'''.  Early adopters must rebase all following branches.
+*: You can change them (via commit) in Git.  Such commits would need to be rebased forward for each reimport, or merged after the importer is finally stopped.
+*: Changing them in CVS (via <tt>chmod foo,v</tt>) will change all subsequent commitids on the next cvs2git run '''after the first appearance of that file'''.  See [[#Stability of import]].
 * Fix -kb (binary flag) - relevant only for Windows users?  I think Git handles this with smudge filters.
+*: It must be said that we paid little attention to this and related line-ending problems, living entirely in the Un*x world.
 * Stop using <tt>CVSROOT/modules</tt> .
 * Terminate as many CVS branches as possible (if any).
 * Find and remove explicit references to CVS
 ** Mostly in POD + comments
 ** Also in install/make_dist scripts.
 * Create or update any deployment scripts.
+** If you are considering <tt>git describe --tags</tt> to extract a label for the code, note that imported history may not be good sample material.  The release tags are likely to be separated from their branch by fixup commits.
+**: Fixup commits are created by cvs2svn (before the "2git" part of cvs2git), to maintain the accuracy of the tagged set of files.  Sometimes they are null commits, byt generally consist of removal of files which were not tagged in CVS.
+**: <tt>git describe</tt> will not look up the short side-branch for a label, so may be unable to return useful results.  During Git development you may place Git tags to allow a meaningful version number to be extracted automatically.
 
 === Pick a date ===
 Decide when to throw the switch.
@@ -196,7 +212,7 @@ Decide when to throw the switch.
 === Switch ===
 # Stop the cvs2git importer loop
 # Commit a prominent <tt>MOVED.txt</tt> or similar file to CVS, explaining where development is continuing.
-# Make the old CVS modules (directories) read-only.  [[SIRT:207328]].
+# Make the old CVS modules (directories) read-only.
 #: This will be trickier if you are importing a scattered set of files.  Have the script prepared.
 
 (Optional) Separate the "CVS history" from "the future".
