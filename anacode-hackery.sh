@@ -41,5 +41,5 @@ elif [ -n "$SUBPROJ" ]; then
    next if $leaf eq "CVSROOT";
    next if $leaf eq $ENV{"SUBPROJ"};
    print "$leaf\x00";
- }' | xargs -r0 echo Would: rm -rf
+ }' | xargs -r0 rm -rf
 fi
