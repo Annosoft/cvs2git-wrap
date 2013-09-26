@@ -4,8 +4,10 @@
 
 # configuration - useful to commit on a team-specific branch,
 # but probably confusing to have on master
-cvs2git.options
 *.kill-branches.txt
+
+# contains lists of users, instead commit the template
+cvs2git.options
 
 # purely for speed optimisation of the checkrevs step
 *.known-good.txt

@@ -14,18 +14,19 @@ DOM=$1
 GIT_REPO="$2"
 OPT_FILE="$3"
 
-[ -d "$GIT_REPO" ] && [ -f "$OPT_FILE" ] || {
+[ -d "$GIT_REPO" ] && ( [ -f "$OPT_FILE" ] || [ -f "$OPT_FILE.template" ] ) || {
     echo "Syntax: $0 <mail-domain> <git-import> <cvs2git.options>
 
 Does local hackery to populate a full set of name/mail pairs.
-The nominated cvs2git.options file is modified."
+The nominated cvs2git.options file is modified,
+or rebuilt from its cvs2git.options.template file if it doesn't exist."
     exit 2
 }
 
 # List the authors like "username <>"
 id_list="$( cd "$GIT_REPO" && git log --pretty='%an <%ae>' | perl -ne 'print if s{ <>$}{}' | sort -u )"
 
-
+[ -f "$OPT_FILE" ] || cp -av "$OPT_FILE.template" "$OPT_FILE"
 
 perl -i~ -pe ' BEGIN { ($id_list, $dom) = splice @ARGV, 1 }
  s/[ #]+(author_transforms=author_transforms.*)/    $1/;
@@ -44,5 +45,4 @@ perl -i~ -pe ' BEGIN { ($id_list, $dom) = splice @ARGV, 1 }
    return join "", @out;
  }'  "$OPT_FILE" "$id_list" "$DOM"
 
-echo "Did hack $OPT_FILE.  It's in Git, right?"
 diff -u "$OPT_FILE~" "$OPT_FILE"
