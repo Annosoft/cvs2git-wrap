@@ -22,14 +22,15 @@ The nominated cvs2git.options file is modified."
     exit 2
 }
 
-id_list="$( cd "$GIT_REPO" && git log --pretty=%an | sort -u )"
+# List the authors like "username <>"
+id_list="$( cd "$GIT_REPO" && git log --pretty='%an <%ae>' | perl -ne 'print if s{ <>$}{}' | sort -u )"
 
 
 
 perl -i~ -pe ' BEGIN { ($id_list, $dom) = splice @ARGV, 1 }
  s/[ #]+(author_transforms=author_transforms.*)/    $1/;
  if (/^author_transforms=/ .. /^\s*\}\s*$/) {
-   s/^/#/ if /^[^#]*\x27/;
+#   s/^/#/ if /^[^#]*\x27/; # keep old ones, cheerfully assume no collisions
    $_ .= do_insert() if /^author_transforms=/;
  }
  sub do_insert {
