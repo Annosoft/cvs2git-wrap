@@ -262,6 +262,10 @@ checktag() {
 # Sets $refs_tag $refs_branch
 # Creates $C2G_TMP/checkrevs{/*,.txt}
 checktags_all() {
+    local gotln
+    gotln=0
+    [ -f "$KNOWN_GOOD_CILIST" ] && gotln=$( wc -l "$KNOWN_GOOD_CILIST" )
+
     cd $REPOGIT
     refs_tag=$( git tag -l | perl -pe 's/^/    /')
     refs_branch=$( git branch --no-color | perl -ne 's/^[ *]+//; next if m{^master$}; s{^}{    }; print' )
@@ -277,6 +281,8 @@ $refs_tag
   branches:
 $refs_branch
 
+
+(found $gotln lines in $KNOWN_GOOD_CILIST )
 
 LST
     cat $C2G_TMP/checkrevs.txt
