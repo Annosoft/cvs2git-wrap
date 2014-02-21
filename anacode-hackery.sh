@@ -16,6 +16,9 @@ if [ -f "$REPO/CVSROOT/rcsinfo,v" ]; then
     exit 1
 fi
 
+# was imported, is now read-only
+find $REPO -type d -print0 | xargs -r0 chmod u+w
+
 cd $REPO
 
 
